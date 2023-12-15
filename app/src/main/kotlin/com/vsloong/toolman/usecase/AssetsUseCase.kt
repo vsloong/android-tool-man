@@ -1,5 +1,6 @@
 package com.vsloong.toolman.usecase
 
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.Path
 
@@ -22,7 +23,21 @@ class AssetsUseCase {
     }
 
     fun getBundleToolJarPath(): Path {
-        return Path(getAssetsDir()).resolve("bundletool-all-1.15.6.jar")
+        return Path(getAssetsDir())
+            .resolve("bundletool-all-1.15.6.jar")
     }
 
+    fun getAdbPath(): Path {
+        val path = Path(getAssetsDir())
+            .resolve("adb")
+
+        if (Files.exists(path)) {
+            val file = path.toFile()
+            if (!file.canExecute()) {
+                file.setExecutable(true)
+            }
+        }
+
+        return path
+    }
 }

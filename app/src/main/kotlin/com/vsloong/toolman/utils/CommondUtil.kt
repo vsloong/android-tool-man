@@ -19,15 +19,18 @@ private fun execute(
         .directory(directory)
         .redirectErrorStream(true)
         .start()
+
     val reader = BufferedReader(
         InputStreamReader(
             process.inputStream,
             Charset.forName("UTF-8")
         )
     )
+
     var line: String?
     while (reader.readLine().also { line = it } != null) {
         line?.let { str ->
+            logger(str)
             onMessage(str)
         }
     }

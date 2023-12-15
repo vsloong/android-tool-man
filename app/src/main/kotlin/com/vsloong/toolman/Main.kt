@@ -60,7 +60,7 @@ private fun App() {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            Text(text = "系统文件路径=${assetsUseCase.getAssetsDir()}", color = Color.Blue, fontSize = 16.sp)
+            Text(text = "系统文件路径=${assetsUseCase.getAssetsPath()}", color = Color.Blue, fontSize = 16.sp)
 
             DragAndDropBox(
                 modifier = Modifier.width(400.dp).height(200.dp),
@@ -91,10 +91,21 @@ private fun App() {
             }
 
             Button(onClick = {
-//                adbUseCase.help()
-                adbUseCase.devices()
+                adbUseCase.help()
             }) {
                 Text(text = "adb help")
+            }
+
+            Button(onClick = {
+                adbUseCase.devices()
+            }) {
+                Text(text = "adb devices")
+            }
+
+            Button(onClick = {
+                adbUseCase.killServer()
+            }) {
+                Text(text = "adb kill-server")
             }
 
         }

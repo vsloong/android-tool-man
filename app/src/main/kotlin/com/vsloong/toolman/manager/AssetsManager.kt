@@ -1,7 +1,5 @@
-package com.vsloong.toolman.usecase
+package com.vsloong.toolman.manager
 
-import org.jetbrains.skiko.OS
-import org.jetbrains.skiko.hostOs
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -10,7 +8,7 @@ import kotlin.io.path.Path
 /**
  * 资源（资产）相关用例
  */
-class AssetsUseCase {
+object AssetsManager {
 
     /**
      * 获取Compose桌面端应用的资产文件路径（注意区分资源文件）

@@ -1,17 +1,48 @@
 package com.vsloong.toolman.utils
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.nio.charset.Charset
 
+/**
+ * 执行cmd指令
+ * @param cmd list形式的指令
+ */
+fun exec(
+    cmd: List<String>,
+    directory: File? = null,
+    onMessage: (String) -> Unit = {},
+    onComplete: (Int) -> Unit = {}
+) = execute(
+    cmd = cmd,
+    directory = directory,
+    onMessage = onMessage,
+    onComplete = onComplete
+)
+
+/**
+ * 执行cmd指令
+ * @param cmd 数组形式的指令
+ */
+fun exec(
+    vararg cmd: String,
+    directory: File? = null,
+    onMessage: (String) -> Unit = {},
+    onComplete: (Int) -> Unit = {}
+) = exec(
+    cmd = listOf(*cmd),
+    directory = directory,
+    onMessage = onMessage,
+    onComplete = onComplete
+)
+
+
 private fun execute(
     cmd: List<String>,
     directory: File? = null,
     onMessage: (String) -> Unit = {},
-    onOver: (Int) -> Unit = {}
+    onComplete: (Int) -> Unit = {}
 ) {
     logger("cmd --->> ${cmd.joinToString(separator = " ")}")
 
@@ -39,34 +70,5 @@ private fun execute(
 //    if (result != 0) {
 //        throw Throwable("result code is not 0")
 //    }
-    onOver.invoke(result)
+    onComplete.invoke(result)
 }
-
-/**
- * 运行CMD指令
- */
-suspend fun exec(
-    cmd: List<String>,
-    directory: File? = null,
-    onMessage: (String) -> Unit = {},
-    onOver: (Int) -> Unit = {}
-) = withContext(Dispatchers.IO) {
-    execute(
-        cmd = cmd,
-        directory = directory,
-        onMessage = onMessage,
-        onOver = onOver
-    )
-}
-
-suspend fun exec(
-    vararg cmd: String,
-    directory: File? = null,
-    onMessage: (String) -> Unit = {},
-    onOver: (Int) -> Unit = {}
-) = exec(
-    cmd = listOf(*cmd),
-    directory = directory,
-    onMessage = onMessage,
-    onOver = onOver
-)

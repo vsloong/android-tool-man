@@ -1,31 +1,25 @@
 package com.vsloong.toolman.usecase
 
 import com.vsloong.toolman.AppScope
+import com.vsloong.toolman.manager.AssetsManager
 import com.vsloong.toolman.utils.exec
 import kotlin.io.path.absolutePathString
 
 class AdbUseCase(
-        private val assetsUseCase: AssetsUseCase
+    assetsManager: AssetsManager = AssetsManager
 ) {
 
-    private val adbPath = assetsUseCase.getAdbPath().absolutePathString()
+    private val adbPath = assetsManager.getAdbPath().absolutePathString()
 
     fun help() {
-        execute(adbPath, "--help")
+        exec(adbPath, "--help")
     }
 
     fun devices() {
-        execute(adbPath, "devices", "-l")
+        exec(adbPath, "devices", "-l")
     }
 
     fun killServer() {
-        execute(adbPath, "kill-server")
+        exec(adbPath, "kill-server")
     }
-
-    private fun execute(
-            vararg cmd: String,
-    ) {
-        AppScope.launch { exec(*cmd) }
-    }
-
 }

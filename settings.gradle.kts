@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "toolman"
+rootProject.name = "android-tool-man"
 include(":app")

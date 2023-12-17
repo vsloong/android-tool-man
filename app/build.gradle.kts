@@ -11,6 +11,12 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+
+    // Navigator:https://github.com/adrielcafe/voyager
+    val voyagerVersion = "1.0.0"
+    implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+    implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$voyagerVersion")
 }
 
 group = "com.vsloong"

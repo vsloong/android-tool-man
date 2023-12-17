@@ -2,9 +2,7 @@ package com.vsloong.toolman
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,17 +11,18 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
+import cafe.adriel.voyager.navigator.CurrentScreen
+import cafe.adriel.voyager.navigator.Navigator
+import com.vsloong.toolman.manager.AssetsManager
 import com.vsloong.toolman.ui.widget.DragAndDropBox
 import com.vsloong.toolman.usecase.AdbUseCase
-import com.vsloong.toolman.usecase.AssetsUseCase
 import com.vsloong.toolman.usecase.BundleUseCase
 import com.vsloong.toolman.utils.logger
 import kotlin.io.path.Path
 
 
-val assetsUseCase = AssetsUseCase()
-val bundleUseCase = BundleUseCase(assetsUseCase)
-val adbUseCase = AdbUseCase(assetsUseCase)
+val bundleUseCase = BundleUseCase()
+val adbUseCase = AdbUseCase()
 
 
 fun main() = application {
@@ -31,7 +30,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         state = appWindowState(),
     ) {
-        App()
+       App()
     }
 }
 
@@ -60,7 +59,7 @@ private fun App() {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            Text(text = "系统文件路径=${assetsUseCase.getAssetsPath()}", color = Color.Blue, fontSize = 16.sp)
+            Text(text = "系统文件路径=${AssetsManager.getAssetsPath()}", color = Color.Blue, fontSize = 16.sp)
 
             DragAndDropBox(
                 modifier = Modifier.width(400.dp).height(200.dp),

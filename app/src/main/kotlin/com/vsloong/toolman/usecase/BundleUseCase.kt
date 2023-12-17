@@ -1,30 +1,27 @@
 package com.vsloong.toolman.usecase
 
 
-import com.vsloong.toolman.AppScope
+import com.vsloong.toolman.manager.AssetsManager
 import com.vsloong.toolman.model.KeyStoreModel
 import com.vsloong.toolman.utils.exec
 import com.vsloong.toolman.utils.logger
 import java.nio.file.Path
 
 class BundleUseCase(
-    private val assetsUseCase: AssetsUseCase
+    private val assetsManager: AssetsManager = AssetsManager
 ) {
 
     fun logVersion() {
-        AppScope.launch {
-            exec(
-                "java",
-                "-jar",
-                assetsUseCase.getBundleToolJarPath().toString(),
-                "version",
-                onMessage = {
-                    logger("输出结果：$it")
-                }
-            )
-        }
+        exec(
+            "java",
+            "-jar",
+            assetsManager.getBundleToolJarPath().toString(),
+            "version",
+            onMessage = {
+                logger("输出结果：$it")
+            }
+        )
     }
-
 
     fun buildApks(
         aabPath: Path,
@@ -34,7 +31,7 @@ class BundleUseCase(
         val cmdList = mutableListOf(
             "java",
             "-jar",
-            assetsUseCase.getBundleToolJarPath().toString(),
+            assetsManager.getBundleToolJarPath().toString(),
             "build-apks",
             "--overwrite",  // 覆盖已有的文件
 //                "--mode=universal",     // 包含所有代码和资源（功能模块）
@@ -52,34 +49,34 @@ class BundleUseCase(
             }
         }
 
-        AppScope.launch {
-            exec(
-                cmdList,
-                onMessage = {
-                    logger("执行中输出：$it")
-                },
-                onOver = {
-                    logger("执行结束:$it")
-                }
-            )
-        }
+
+        exec(
+            cmdList,
+            onMessage = {
+                logger("执行中输出：$it")
+            },
+            onComplete = {
+                logger("执行结束:$it")
+            }
+        )
+
     }
 
     fun installApk(apksPath: Path) {
-        AppScope.launch {
-            exec(
-                "java",
-                "-jar",
-                assetsUseCase.getBundleToolJarPath().toString(),
-                "install-apks",
-                "--apks=${apksPath}",
-                onMessage = {
-                    logger("安装输出：$it")
-                },
-                onOver = {
-                    logger("执行结束：$it")
-                }
-            )
-        }
+
+        exec(
+            "java",
+            "-jar",
+            assetsManager.getBundleToolJarPath().toString(),
+            "install-apks",
+            "--apks=${apksPath}",
+            onMessage = {
+                logger("安装输出：$it")
+            },
+            onComplete = {
+                logger("执行结束：$it")
+            }
+        )
     }
+
 }

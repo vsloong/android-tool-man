@@ -17,6 +17,9 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$voyagerVersion")
+
+    // 解压缩
+    implementation("org.apache.commons:commons-compress:1.21")
 }
 
 group = "com.vsloong"

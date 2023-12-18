@@ -2,13 +2,14 @@ package com.vsloong.toolman.usecase
 
 
 import com.vsloong.toolman.manager.AssetsManager
+import com.vsloong.toolman.manager.IAssetsPath
 import com.vsloong.toolman.model.KeyStoreModel
 import com.vsloong.toolman.utils.exec
 import com.vsloong.toolman.utils.logger
 import java.nio.file.Path
 
 class BundleUseCase(
-    private val assetsManager: AssetsManager = AssetsManager
+    private val assetsManager: IAssetsPath = AssetsManager
 ) {
 
     fun logVersion() {
@@ -25,8 +26,11 @@ class BundleUseCase(
 
     fun buildApks(
         aabPath: Path,
+        universal: Boolean = false,
         keyStoreModel: KeyStoreModel? = null
-    ) {
+    ): Path {
+
+        val outputPath = aabPath.parent.resolve("output.apks")
 
         val cmdList = mutableListOf(
             "java",
@@ -37,8 +41,12 @@ class BundleUseCase(
 //                "--mode=universal",     // 包含所有代码和资源（功能模块）
 //                "--connected-device",   // 针对已连接设备的配置构建 APK
             "--bundle=$aabPath",
-            "--output=${aabPath.parent.resolve("output.apks")}",
+            "--output=${outputPath}",
         )
+
+        if (universal) {
+            cmdList.add("--mode=universal")
+        }
 
         keyStoreModel?.let {
             cmdList.apply {
@@ -60,6 +68,7 @@ class BundleUseCase(
             }
         )
 
+        return outputPath
     }
 
     fun installApk(apksPath: Path) {

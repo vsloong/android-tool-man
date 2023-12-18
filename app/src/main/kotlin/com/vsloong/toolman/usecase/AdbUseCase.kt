@@ -2,11 +2,12 @@ package com.vsloong.toolman.usecase
 
 import com.vsloong.toolman.AppScope
 import com.vsloong.toolman.manager.AssetsManager
+import com.vsloong.toolman.manager.IAssetsPath
 import com.vsloong.toolman.utils.exec
 import kotlin.io.path.absolutePathString
 
 class AdbUseCase(
-    assetsManager: AssetsManager = AssetsManager
+    assetsManager: IAssetsPath = AssetsManager
 ) {
 
     private val adbPath = assetsManager.getAdbPath().absolutePathString()

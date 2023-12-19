@@ -1,4 +1,4 @@
-package com.vsloong.toolman.model
+package com.vsloong.toolman.core.common.model
 
 import java.io.File
 

@@ -1,4 +1,4 @@
-package com.vsloong.toolman.utils
+package com.vsloong.toolman.core.common.utils
 
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
@@ -7,7 +7,6 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 
 /**

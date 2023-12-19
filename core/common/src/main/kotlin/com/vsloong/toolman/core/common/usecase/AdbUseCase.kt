@@ -1,13 +1,12 @@
-package com.vsloong.toolman.usecase
+package com.vsloong.toolman.core.common.usecase
 
-import com.vsloong.toolman.AppScope
-import com.vsloong.toolman.manager.AssetsManager
-import com.vsloong.toolman.manager.IAssetsPath
-import com.vsloong.toolman.utils.exec
+import com.vsloong.toolman.core.common.manager.IAssetsPath
+import com.vsloong.toolman.core.common.utils.exec
+import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
 class AdbUseCase(
-    assetsManager: IAssetsPath = AssetsManager
+    assetsManager: IAssetsPath
 ) {
 
     private val adbPath = assetsManager.getAdbPath().absolutePathString()
@@ -22,5 +21,9 @@ class AdbUseCase(
 
     fun killServer() {
         exec(adbPath, "kill-server")
+    }
+
+    fun installApk(apkPath: Path) {
+        exec(adbPath, "install", apkPath.toString())
     }
 }

@@ -1,5 +1,6 @@
 package com.vsloong.toolman.manager
 
+import com.vsloong.toolman.core.common.manager.IAssetsPath
 import java.nio.file.Path
 import kotlin.io.path.Path
 

@@ -1,6 +1,6 @@
 package com.vsloong.toolman
 
-import com.vsloong.toolman.utils.logger
+import com.vsloong.toolman.core.common.utils.logger
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext

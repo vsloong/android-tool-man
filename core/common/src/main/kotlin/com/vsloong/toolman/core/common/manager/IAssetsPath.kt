@@ -1,4 +1,4 @@
-package com.vsloong.toolman.manager
+package com.vsloong.toolman.core.common.manager
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -9,16 +9,17 @@ import java.nio.file.Path
 interface IAssetsPath {
 
     val assetsPropertyKey: String get() = "compose.application.resources.dir"
+    val bundleJarFileName: String get() = "bundletool-all-1.15.6.jar"
 
     fun getAssetsPath(): Path
 
     fun getBundleToolJarPath(): Path {
         return getAssetsPath()
-            .resolve("bundletool-all-1.15.6.jar")
+            .resolve(bundleJarFileName)
     }
 
     fun getAdbPath(): Path {
-        val path = AssetsManager.getAssetsPath().resolve("adb")
+        val path = getAssetsPath().resolve("adb")
 
         if (Files.exists(path)) {
             val file = path.toFile()

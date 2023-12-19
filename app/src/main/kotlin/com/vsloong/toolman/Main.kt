@@ -13,16 +13,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
+import com.vsloong.toolman.core.common.usecase.AdbUseCase
+import com.vsloong.toolman.core.common.usecase.BundleUseCase
 import com.vsloong.toolman.manager.AssetsManager
 import com.vsloong.toolman.ui.widget.DragAndDropBox
-import com.vsloong.toolman.usecase.AdbUseCase
-import com.vsloong.toolman.usecase.BundleUseCase
-import com.vsloong.toolman.utils.logger
 import kotlin.io.path.Path
 
 
-val bundleUseCase = BundleUseCase()
-val adbUseCase = AdbUseCase()
+val bundleUseCase = BundleUseCase(AssetsManager)
+val adbUseCase = AdbUseCase(AssetsManager)
 
 
 fun main() = application {
@@ -65,8 +64,6 @@ private fun App() {
                 modifier = Modifier.width(400.dp).height(200.dp),
                 dashedBorderColor = Color.Blue,
                 onDrop = {
-                    logger("文件：$it")
-
                     if (it.size == 1) {
                         val file = it.first().toFile()
 

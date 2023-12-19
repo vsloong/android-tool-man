@@ -1,15 +1,14 @@
-package com.vsloong.toolman.usecase
+package com.vsloong.toolman.core.common.usecase
 
 
-import com.vsloong.toolman.manager.AssetsManager
-import com.vsloong.toolman.manager.IAssetsPath
-import com.vsloong.toolman.model.KeyStoreModel
-import com.vsloong.toolman.utils.exec
-import com.vsloong.toolman.utils.logger
+import com.vsloong.toolman.core.common.manager.IAssetsPath
+import com.vsloong.toolman.core.common.model.KeyStoreModel
+import com.vsloong.toolman.core.common.utils.exec
+import com.vsloong.toolman.core.common.utils.logger
 import java.nio.file.Path
 
 class BundleUseCase(
-    private val assetsManager: IAssetsPath = AssetsManager
+    private val assetsManager: IAssetsPath
 ) {
 
     fun logVersion() {

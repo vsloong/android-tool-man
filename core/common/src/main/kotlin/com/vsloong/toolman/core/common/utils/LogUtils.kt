@@ -1,4 +1,4 @@
-package com.vsloong.toolman.utils
+package com.vsloong.toolman.core.common.utils
 
 
 fun logger(msg: String) {

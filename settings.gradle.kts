@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "android-tool-man"
 include(":app")
+
+include(":core:common")

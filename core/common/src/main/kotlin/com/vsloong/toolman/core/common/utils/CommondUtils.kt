@@ -12,12 +12,14 @@ import java.nio.charset.Charset
 fun exec(
     cmd: List<String>,
     directory: File? = null,
-    onMessage: (String) -> Unit = {},
+    onLine: (String) -> Unit = {},
+    onLines: ((List<String>) -> Unit)? = null,
     onComplete: (Int) -> Unit = {}
 ) = execute(
     cmd = cmd,
     directory = directory,
-    onMessage = onMessage,
+    onLine = onLine,
+    onLines = onLines,
     onComplete = onComplete
 )
 
@@ -28,12 +30,14 @@ fun exec(
 fun exec(
     vararg cmd: String,
     directory: File? = null,
-    onMessage: (String) -> Unit = {},
+    onLine: (String) -> Unit = {},
+    onLines: ((List<String>) -> Unit)? = null,
     onComplete: (Int) -> Unit = {}
 ) = exec(
     cmd = listOf(*cmd),
     directory = directory,
-    onMessage = onMessage,
+    onLine = onLine,
+    onLines = onLines,
     onComplete = onComplete
 )
 
@@ -41,7 +45,8 @@ fun exec(
 private fun execute(
     cmd: List<String>,
     directory: File? = null,
-    onMessage: (String) -> Unit = {},
+    onLine: (String) -> Unit = {},
+    onLines: ((List<String>) -> Unit)? = null,
     onComplete: (Int) -> Unit = {}
 ) {
     logger("cmd --->> ${cmd.joinToString(separator = " ")}")
@@ -58,13 +63,21 @@ private fun execute(
         )
     )
 
+    val msgList = mutableListOf<String>()
+
     var line: String?
     while (reader.readLine().also { line = it } != null) {
         line?.let { str ->
             logger(str)
-            onMessage(str)
+
+            onLine(str)
+            if (onLines != null && str.isNotBlank()) {
+                msgList.add(str)
+            }
         }
     }
+
+    onLines?.invoke(msgList)
 
     val result = process.waitFor()
 //    if (result != 0) {

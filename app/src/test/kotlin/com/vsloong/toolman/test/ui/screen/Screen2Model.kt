@@ -2,7 +2,7 @@ package com.vsloong.toolman.test.ui.screen
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.vsloong.toolman.utils.logger
+import com.vsloong.toolman.core.common.utils.logger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

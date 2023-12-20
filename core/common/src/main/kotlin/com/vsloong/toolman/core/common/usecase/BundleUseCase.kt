@@ -17,7 +17,7 @@ class BundleUseCase(
             "-jar",
             assetsManager.getBundleToolJarPath().toString(),
             "version",
-            onMessage = {
+            onLine = {
                 logger("输出结果：$it")
             }
         )
@@ -25,7 +25,7 @@ class BundleUseCase(
 
     fun buildApks(
         aabPath: Path,
-        universal: Boolean = false,
+        universal: Boolean = true,
         keyStoreModel: KeyStoreModel? = null
     ): Path {
 
@@ -37,12 +37,11 @@ class BundleUseCase(
             assetsManager.getBundleToolJarPath().toString(),
             "build-apks",
             "--overwrite",  // 覆盖已有的文件
-//                "--mode=universal",     // 包含所有代码和资源（功能模块）
-//                "--connected-device",   // 针对已连接设备的配置构建 APK
             "--bundle=$aabPath",
             "--output=${outputPath}",
         )
 
+        // 包含所有代码和资源（功能模块）
         if (universal) {
             cmdList.add("--mode=universal")
         }
@@ -56,10 +55,9 @@ class BundleUseCase(
             }
         }
 
-
         exec(
             cmdList,
-            onMessage = {
+            onLine = {
                 logger("执行中输出：$it")
             },
             onComplete = {
@@ -70,21 +68,23 @@ class BundleUseCase(
         return outputPath
     }
 
-    fun installApk(apksPath: Path) {
-
-        exec(
-            "java",
-            "-jar",
-            assetsManager.getBundleToolJarPath().toString(),
-            "install-apks",
-            "--apks=${apksPath}",
-            onMessage = {
-                logger("安装输出：$it")
-            },
-            onComplete = {
-                logger("执行结束：$it")
-            }
-        )
+    fun installApks(apksPath: Path, devices: Set<String>) {
+        devices.forEach { device ->
+            exec(
+                "java",
+                "-jar",
+                assetsManager.getBundleToolJarPath().toString(),
+                "install-apks",
+                "--apks=${apksPath}",
+                "--device-id=${device}",
+                onLine = {
+                    logger("安装输出：$it")
+                },
+                onComplete = {
+                    logger("执行结束：$it")
+                }
+            )
+        }
     }
 
 }

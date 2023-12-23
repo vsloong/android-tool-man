@@ -10,12 +10,24 @@ interface IAssetsPath {
 
     val assetsPropertyKey: String get() = "compose.application.resources.dir"
     val bundleJarFileName: String get() = "bundletool-all-1.15.6.jar"
+    val vasDollyJarFileName: String get() = "vas_dolly_3.0.6.jar"
+    val walleJarFileName: String get() = "walle_1.1.6.jar"
 
     fun getAssetsPath(): Path
 
     fun getBundleToolJarPath(): Path {
         return getAssetsPath()
             .resolve(bundleJarFileName)
+    }
+
+    fun getVasDollyJarPath(): Path {
+        return getAssetsPath()
+            .resolve(vasDollyJarFileName)
+    }
+
+    fun getWalleJarPath(): Path {
+        return getAssetsPath()
+            .resolve(walleJarFileName)
     }
 
     fun getAdbPath(): Path {

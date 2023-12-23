@@ -18,7 +18,7 @@ class BundleUseCase(
             assetsManager.getBundleToolJarPath().toString(),
             "version",
             onLine = {
-                logger("输出结果：$it")
+
             }
         )
     }

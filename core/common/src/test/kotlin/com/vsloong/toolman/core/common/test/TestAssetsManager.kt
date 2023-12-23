@@ -20,7 +20,11 @@ object TestAssetsManager : IAssetsPath {
      */
     override
     fun getAssetsPath(): Path {
-        val projectPath = Path("/Users/dragon/Workspace/Desktop/android-tool-man")
+        val projectPath = if (isMacOs()) {
+            Path("/Users/dragon/Workspace/Desktop/android-tool-man")
+        } else {
+            Path("D:\\Works_Compose_Desktop\\android-tool-man")
+        }
 
         return projectPath
             .resolve("assets")
@@ -30,6 +34,18 @@ object TestAssetsManager : IAssetsPath {
         return getAssetsPath()
             .resolve("common")
             .resolve(bundleJarFileName)
+    }
+
+    override fun getVasDollyJarPath(): Path {
+        return getAssetsPath()
+            .resolve("common")
+            .resolve(vasDollyJarFileName)
+    }
+
+    override fun getWalleJarPath(): Path {
+        return getAssetsPath()
+            .resolve("common")
+            .resolve(walleJarFileName)
     }
 
     override fun getAdbPath(): Path {

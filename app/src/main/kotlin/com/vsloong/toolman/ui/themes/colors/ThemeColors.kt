@@ -17,6 +17,6 @@ sealed class ThemeColors(
     object Light : ThemeColors(
         background = Color.White,
         primary = Color(0xFF7776FF),
-        text_primary = Color(0xFFA2A0B1),
+        text_primary = Color.Black,
     )
 }

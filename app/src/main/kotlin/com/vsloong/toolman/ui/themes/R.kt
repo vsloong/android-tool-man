@@ -4,5 +4,5 @@ import com.vsloong.toolman.ui.themes.colors.ThemeColors
 
 object R {
 
-    val colors = ThemeColors.Dark
+    val colors = ThemeColors.Light
 }

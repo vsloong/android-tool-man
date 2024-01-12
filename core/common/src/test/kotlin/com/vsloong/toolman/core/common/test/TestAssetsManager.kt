@@ -6,7 +6,6 @@ import com.vsloong.toolman.core.common.utils.isMacOs
 import com.vsloong.toolman.core.common.utils.isWindows
 import java.nio.file.Path
 import kotlin.io.path.Path
-import kotlin.io.path.toPath
 
 
 /**
@@ -49,7 +48,21 @@ object TestAssetsManager : IAssetsPath {
     }
 
     override fun getAdbPath(): Path {
-        val platform = if (isMacOs()) {
+        return getAssetsPath()
+            .resolve(
+                getPlatForm()
+            )
+            .resolve("adb")
+    }
+
+    override fun getApkSignerJarPath(): Path {
+        return getAssetsPath()
+            .resolve("common")
+            .resolve(apkSignerJarFileName)
+    }
+
+    private fun getPlatForm(): String {
+        return if (isMacOs()) {
             "macos"
         } else if (isLinux()) {
             "linux"
@@ -58,10 +71,5 @@ object TestAssetsManager : IAssetsPath {
         } else {
             throw Throwable("not supported platform")
         }
-        return getAssetsPath()
-            .resolve(
-                platform
-            )
-            .resolve("adb")
     }
 }

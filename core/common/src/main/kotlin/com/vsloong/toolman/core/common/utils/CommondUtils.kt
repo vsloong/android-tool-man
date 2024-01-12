@@ -6,6 +6,24 @@ import java.io.InputStreamReader
 import java.nio.charset.Charset
 
 /**
+ * 空白字符串
+ */
+private val whitespace = Regex("""\s""")
+fun exec(
+    cmd: String,
+    directory: File? = null,
+    onLine: (String) -> Unit = {},
+    onLines: ((List<String>) -> Unit)? = null,
+    onComplete: (Int) -> Unit = {}
+) = execute(
+    cmd = cmd.split(whitespace),
+    directory = directory,
+    onLine = onLine,
+    onLines = onLines,
+    onComplete = onComplete
+)
+
+/**
  * 执行cmd指令
  * @param cmd list形式的指令
  */

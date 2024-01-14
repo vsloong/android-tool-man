@@ -6,22 +6,22 @@ import com.vsloong.toolman.core.common.manager.WorkspaceManager
 import com.vsloong.toolman.core.common.model.CmdOutput
 import com.vsloong.toolman.core.common.usecase.AdbUseCase
 import com.vsloong.toolman.core.common.usecase.ApkSignerUseCase
+import com.vsloong.toolman.core.common.usecase.factory.UseCaseFactory
 import com.vsloong.toolman.manager.AssetsManager
 import java.io.File
 
 class FeedsViewModel(
-    adbUseCase: AdbUseCase = AdbUseCase(assetsManager = AssetsManager),
-    apkSignerUseCase: ApkSignerUseCase = ApkSignerUseCase(assetsManager = AssetsManager),
+    private val cmdUseCaseFactory: UseCaseFactory = UseCaseFactory(
+        assetsManager = AssetsManager
+    )
 ) : BaseViewModel() {
 
 
     val feedsEvent = FeedsEvent(
         onExecuteClick = { cmd ->
 
-            if (cmd.startsWith("adb ")) {
-                val cmdOutput = adbUseCase.run(cmd)
-                _cmdResultList.add(cmdOutput)
-            }
+            val result = cmdUseCaseFactory.run(cmd)
+            _cmdResultList.add(result)
 
 //            val packageName = "com.honeycam.lite"
 //            val apkInstallPath = adbUseCase.apkPath(packageName)

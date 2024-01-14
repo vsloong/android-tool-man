@@ -1,14 +1,14 @@
 package com.vsloong.toolman.core.common.test
 
-import com.vsloong.toolman.core.common.usecase.IChannelUseCase
-import com.vsloong.toolman.core.common.usecase.VasDollylUseCase
+import com.vsloong.toolman.core.common.usecase.interfaces.IChannelUseCase
+import com.vsloong.toolman.core.common.usecase.VasDollyUseCase
 import com.vsloong.toolman.core.common.usecase.WalleUseCase
 import com.vsloong.toolman.core.common.utils.logger
 import kotlin.io.path.Path
 
 fun main() {
 
-    val channelUseCase: IChannelUseCase = VasDollylUseCase(assetsManager = TestAssetsManager)
+    val channelUseCase: IChannelUseCase = VasDollyUseCase(assetsManager = TestAssetsManager)
 //    val channelUseCase: IChannelUseCase = WalleUseCase(assetsManager = TestAssetsManager)
 
     val apkDir = Path("E:\\AndroidToolMan\\apk\\")

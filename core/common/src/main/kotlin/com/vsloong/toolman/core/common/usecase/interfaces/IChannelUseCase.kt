@@ -1,4 +1,4 @@
-package com.vsloong.toolman.core.common.usecase
+package com.vsloong.toolman.core.common.usecase.interfaces
 
 import java.nio.file.Path
 

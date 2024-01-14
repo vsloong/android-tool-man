@@ -7,19 +7,21 @@ import javax.swing.filechooser.FileSystemView
 fun main() {
     val adb = AdbUseCase(assetsManager = TestAssetsManager)
 
-//    adb.help()
-    val devices = adb.getDevices()
+    adb.help()
+    adb.version()
 
-    var deviceId = ""
-    devices.forEach {
-        logger("获取的设备信息：$it")
-        deviceId = it.deviceId
-    }
-    adb.currentFocusActivity(deviceId = deviceId)
-
+//    val devices = adb.getDevices()
+//
+//    var deviceId = ""
+//    devices.forEach {
+//        logger("获取的设备信息：$it")
+//        deviceId = it.deviceId
+//    }
+//    adb.currentFocusActivity(deviceId = deviceId)
+//
 //    adb.packages()
-
-    adb.apkPath(packageName = "com.honeycam.lite")
+//
+//    adb.apkPath(packageName = "com.honeycam.lite")
 
 
 //    adb.startActivity(

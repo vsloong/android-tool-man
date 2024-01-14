@@ -8,7 +8,8 @@ import java.nio.charset.Charset
 /**
  * 空白字符串
  */
-private val whitespace = Regex("""\s""")
+val whitespace = Regex("""\s""")
+
 fun exec(
     cmd: String,
     directory: File? = null,

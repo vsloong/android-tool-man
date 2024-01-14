@@ -2,38 +2,29 @@ package com.vsloong.toolman.core.common.usecase
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.model.AdbDeviceInfo
-import com.vsloong.toolman.core.common.model.CmdOutput
+import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import com.vsloong.toolman.core.common.utils.exec
 import com.vsloong.toolman.core.common.utils.logger
-import java.lang.StringBuilder
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
 
 /**
  * adb内容参考：https://developer.android.google.cn/tools/adb?hl=zh-cn
  */
 class AdbUseCase(
-    assetsManager: IAssetsPath,
+    private val assetsManager: IAssetsPath,
     private val regexUseCase: RegexUseCase = RegexUseCase()
-) {
+) : ICmdUseCase {
 
-    private val adbPath = assetsManager.getAdbPath().absolutePathString()
+    private val adbPath = assetsManager.getAdbPath()
 
-    fun run(cmd: String): CmdOutput {
-        val output = StringBuilder()
-        val realCmd = cmd.replaceFirst("adb", adbPath)
-        exec(
-            cmd = realCmd,
-            onLine = {
-                output.append(it).append("\n")
-            })
+    override fun cmdName(): String {
+        return CmdConstant.Adb.cmdName
+    }
 
-        return CmdOutput(
-            cmd = cmd,
-            output = output.toString().trim()
-        )
+    override fun cmdPath(): String {
+        return assetsManager.getAdbPath().toString()
     }
 
     /**
@@ -41,7 +32,11 @@ class AdbUseCase(
      */
 
     fun help() {
-        exec(adbPath, "--help")
+        run("adb --help")
+    }
+
+    fun version() {
+        run(cmd = "${cmdName()} version")
     }
 
     /**
@@ -50,7 +45,7 @@ class AdbUseCase(
     fun getDevices(): Set<AdbDeviceInfo> {
         val devices = mutableSetOf<AdbDeviceInfo>()
         exec(
-            adbPath, "devices", "-l",
+            adbPath.toString(), "devices", "-l",
             onLines = {
                 if (it.size <= 1) {
                     logger("没有设备连接")
@@ -78,17 +73,13 @@ class AdbUseCase(
     fun installApk(apkPath: Path, devices: Set<String>) {
         devices.forEach { device ->
             exec(
-                adbPath,
+                adbPath.toString(),
                 "-s",
                 device,
                 "install",
                 apkPath.toString()
             )
         }
-    }
-
-    fun killServer() {
-        exec(adbPath, "kill-server")
     }
 
     /**
@@ -235,13 +226,13 @@ class AdbUseCase(
     }
 
     fun getDevice() {
-        exec(adbPath, "shell", "getprop", "ro.build.version.sdk")
-        exec(adbPath, "shell", "getprop", "ro.build.version.release")
-        exec(adbPath, "shell", "getprop", "ro.product.model")
-        exec(adbPath, "shell", "getprop", "ro.product.brand")
-        exec(adbPath, "shell", "getprop", "ro.product.name")
-        exec(adbPath, "shell", "getprop", "ro.product.board")
-        exec(adbPath, "shell", "getprop", "ro.product.cpu.abilist")
-        exec(adbPath, "shell", "getprop", "ro.sf.Idc_density")
+        exec(adbPath.toString(), "shell", "getprop", "ro.build.version.sdk")
+        exec(adbPath.toString(), "shell", "getprop", "ro.build.version.release")
+        exec(adbPath.toString(), "shell", "getprop", "ro.product.model")
+        exec(adbPath.toString(), "shell", "getprop", "ro.product.brand")
+        exec(adbPath.toString(), "shell", "getprop", "ro.product.name")
+        exec(adbPath.toString(), "shell", "getprop", "ro.product.board")
+        exec(adbPath.toString(), "shell", "getprop", "ro.product.cpu.abilist")
+        exec(adbPath.toString(), "shell", "getprop", "ro.sf.Idc_density")
     }
 }

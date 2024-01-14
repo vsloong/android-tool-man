@@ -1,15 +1,15 @@
 package com.vsloong.toolman.core.common.usecase
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
+import com.vsloong.toolman.core.common.usecase.interfaces.IChannelUseCase
+import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import com.vsloong.toolman.core.common.utils.exec
 import java.nio.file.Path
 import kotlin.io.path.nameWithoutExtension
 
-class VasDollylUseCase(
+class VasDollyUseCase(
     private val assetsManager: IAssetsPath,
-) : IChannelUseCase {
-
-    private val jarPath = assetsManager.getVasDollyJarPath()
+) : IChannelUseCase, ICmdUseCase {
 
     override fun putChannel(
         apkPath: Path,
@@ -17,10 +17,15 @@ class VasDollylUseCase(
     ) {
         val apkName = apkPath.nameWithoutExtension
         channels.forEach { channel ->
+//            run(
+//                cmd = "${cmdName()} put -c $channel -f $apkPath " +
+//                        "${apkPath.parent.resolve("${apkName}_${channel}.apk")}"
+//            )
+
             exec(
                 "java",
                 "-jar",
-                jarPath.toString(),
+                assetsManager.getVasDollyJarPath().toString(),
                 "put",
                 "-c",
                 channel,
@@ -40,17 +45,10 @@ class VasDollylUseCase(
     ): String? {
 
         var lastLine = ""
-        exec(
-            "java",
-            "-jar",
-            jarPath.toString(),
-            "get",
-            "-c",
-            apkPath.toString(),
+        run(cmd = "${cmdName()} get -c $apkPath",
             onLine = {
                 lastLine = it
-            }
-        )
+            })
 
         val regex = Regex("""Channel:.*,len""")
         val result = regex.find(lastLine)?.value
@@ -60,13 +58,14 @@ class VasDollylUseCase(
     }
 
     override fun removeChannel(apkPath: Path) {
-        exec(
-            "java",
-            "-jar",
-            jarPath.toString(),
-            "remove",
-            "-c",
-            apkPath.toString(),
-        )
+        run(cmd = "${cmdName()} remove -c $apkPath")
+    }
+
+    override fun cmdName(): String {
+        return CmdConstant.VasDolly.cmdName
+    }
+
+    override fun cmdPath(): String {
+        return "java -jar ${assetsManager.getVasDollyJarPath()}"
     }
 }

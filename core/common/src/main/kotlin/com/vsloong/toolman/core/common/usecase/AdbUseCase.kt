@@ -2,8 +2,10 @@ package com.vsloong.toolman.core.common.usecase
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.model.AdbDeviceInfo
+import com.vsloong.toolman.core.common.model.CmdOutput
 import com.vsloong.toolman.core.common.utils.exec
 import com.vsloong.toolman.core.common.utils.logger
+import java.lang.StringBuilder
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -18,6 +20,21 @@ class AdbUseCase(
 ) {
 
     private val adbPath = assetsManager.getAdbPath().absolutePathString()
+
+    fun run(cmd: String): CmdOutput {
+        val output = StringBuilder()
+        val realCmd = cmd.replaceFirst("adb", adbPath)
+        exec(
+            cmd = realCmd,
+            onLine = {
+                output.append(it).append("\n")
+            })
+
+        return CmdOutput(
+            cmd = cmd,
+            output = output.toString().trim()
+        )
+    }
 
     /**
      * 空白字符串

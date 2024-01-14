@@ -20,6 +20,18 @@ import com.vsloong.toolman.ui.device.DeviceContent
 import com.vsloong.toolman.ui.tab.LeftTab
 import com.vsloong.toolman.ui.themes.R
 
+@Composable
+fun appWindowState(
+    placement: WindowPlacement = WindowPlacement.Floating,
+    isMinimized: Boolean = false,
+    position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
+    size: DpSize = DpSize(1060.dp, 680.dp),
+): WindowState = rememberWindowState(
+    placement = placement,
+    isMinimized = isMinimized,
+    position = position,
+    size = size
+)
 
 fun main() = application {
     Window(
@@ -48,7 +60,7 @@ fun main() = application {
                     }
 
                     // 中间功能栏
-                    Column(modifier = Modifier.fillMaxSize().weight(2f)) {
+                    Column(modifier = Modifier.fillMaxSize().weight(3f)) {
                         Navigator(FeedsScreen()){
                             CurrentScreen()
                         }
@@ -69,15 +81,3 @@ fun main() = application {
 
 }
 
-@Composable
-fun appWindowState(
-    placement: WindowPlacement = WindowPlacement.Floating,
-    isMinimized: Boolean = false,
-    position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
-    size: DpSize = DpSize(1060.dp, 750.dp),
-): WindowState = rememberWindowState(
-    placement = placement,
-    isMinimized = isMinimized,
-    position = position,
-    size = size
-)

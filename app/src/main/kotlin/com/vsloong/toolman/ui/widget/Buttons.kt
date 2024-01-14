@@ -32,15 +32,15 @@ fun AppButton(
         onClick = onClick,
         enabled = clickable,
         modifier = modifier
-            .widthIn(min = 120.dp)
-            .heightIn(min = 36.dp),
+            .widthIn(min = 100.dp)
+            .heightIn(min = 40.dp),
         color = if (clickable) {
             backgroundColor
         } else {
             backgroundColor.copy(alpha = 0.25f)
         },
         contentColor = Color.Transparent,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(50)
     ) {
 
         Box(

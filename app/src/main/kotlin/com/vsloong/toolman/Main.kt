@@ -48,11 +48,11 @@ fun main() = application {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(48.dp))
+                    .clip(RoundedCornerShape(24.dp))
                     .background(color = R.colors.background),
             ) {
                 WindowDraggableArea(
-                    modifier = Modifier.fillMaxWidth().height(46.dp).background(color = Color.Blue)
+                    modifier = Modifier.fillMaxWidth().height(46.dp).background(color = Color.LightGray)
                 )
 
                 Row(modifier = Modifier.fillMaxSize()) {

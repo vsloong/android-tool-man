@@ -56,12 +56,17 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "toolman"
+            packageName = "ToolMan"
             packageVersion = "1.0.0"
 
             // 配置资源目录
             appResourcesRootDir.set(project.rootProject.file("assets"))
 
+            // 分平台配置应用图标
+            val iconsRoot = project.file("src/main/resources")
+            macOS {
+                iconFile.set(iconsRoot.resolve("ic_launcher.icns"))
+            }
         }
     }
 }

@@ -6,12 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,25 +26,35 @@ import com.vsloong.toolman.core.common.model.CmdOutput
 import com.vsloong.toolman.ui.themes.R
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppTextFiled
+import kotlinx.coroutines.launch
 
 class FeedsScreen : BaseScreen {
 
     @Composable
     override fun Content() {
         val feedsViewModel = rememberViewModel { FeedsViewModel() }
+        val scope = rememberCoroutineScope()
+        val lazyListState = rememberLazyListState()
 
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
+            LaunchedEffect(feedsViewModel.cmdResultList.size) {
+                if (feedsViewModel.cmdResultList.size > 1) {
+                    lazyListState.scrollToItem(feedsViewModel.cmdResultList.size - 1)
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize().weight(1f)
                     .clip(RoundedCornerShape(20.dp)),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                state = lazyListState
             ) {
-                items(feedsViewModel.cmdResultList) {
-                    CmdItem(it)
+                itemsIndexed(feedsViewModel.cmdResultList) { index, item ->
+                    CmdItem(item, index)
                 }
             }
 
@@ -55,11 +65,17 @@ class FeedsScreen : BaseScreen {
     }
 
     @Composable
-    private fun CmdItem(cmdOutPut: CmdOutput) {
+    private fun CmdItem(cmdOutPut: CmdOutput, index: Int) {
         Column(
             modifier = Modifier.fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(color = Color(0xFFDFEBFF))
+                .background(
+                    color = if (index % 2 == 0) {
+                        Color(0xFFDFEBFF)
+                    } else {
+                        Color(0xFFFFF6DF)
+                    }
+                )
                 .padding(all = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {

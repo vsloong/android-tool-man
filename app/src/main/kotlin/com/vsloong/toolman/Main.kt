@@ -17,6 +17,7 @@ import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import com.vsloong.toolman.ui.content.FeedsScreen
 import com.vsloong.toolman.ui.device.DeviceContent
+import com.vsloong.toolman.ui.home.HomeViewModel
 import com.vsloong.toolman.ui.tab.LeftTab
 import com.vsloong.toolman.ui.themes.R
 
@@ -32,6 +33,8 @@ fun appWindowState(
     position = position,
     size = size
 )
+
+val homeViewModel = HomeViewModel()
 
 fun main() = application {
     Window(
@@ -61,14 +64,22 @@ fun main() = application {
 
                     // 中间功能栏
                     Column(modifier = Modifier.fillMaxSize().weight(3f)) {
-                        Navigator(FeedsScreen()){
+                        Navigator(FeedsScreen()) {
                             CurrentScreen()
                         }
                     }
 
                     // 右侧栏
                     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
-                        DeviceContent()
+                        DeviceContent(
+                            devices = homeViewModel.devices,
+                            onFileDrop = { files, device ->
+                                homeViewModel.install(files, setOf(device))
+                            },
+
+                            onRefreshClick = {
+                                homeViewModel.refreshDevices()
+                            })
                     }
                 }
 
@@ -77,7 +88,5 @@ fun main() = application {
         }
 
     }
-
-
 }
 

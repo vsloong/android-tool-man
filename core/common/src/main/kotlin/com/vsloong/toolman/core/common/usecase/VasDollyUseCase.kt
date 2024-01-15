@@ -62,7 +62,7 @@ class VasDollyUseCase(
     }
 
     override fun cmdName(): String {
-        return CmdConstant.VasDolly.cmdName
+        return CmdType.VasDolly.cmdName
     }
 
     override fun cmdPath(): String {

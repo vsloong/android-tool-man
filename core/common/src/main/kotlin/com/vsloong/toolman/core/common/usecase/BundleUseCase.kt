@@ -3,88 +3,63 @@ package com.vsloong.toolman.core.common.usecase
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.model.KeyStoreModel
-import com.vsloong.toolman.core.common.utils.exec
-import com.vsloong.toolman.core.common.utils.logger
+import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
+import java.lang.StringBuilder
 import java.nio.file.Path
 
 class BundleUseCase(
     private val assetsManager: IAssetsPath
-) {
+) : ICmdUseCase {
 
     fun logVersion() {
-        exec(
-            "java",
-            "-jar",
-            assetsManager.getBundleToolJarPath().toString(),
-            "version",
-            onLine = {
-
-            }
-        )
+        run(cmd = "${cmdName()} version")
     }
 
+    /**
+     * 注意：命令的最后不能有空格
+     */
     fun buildApks(
         aabPath: Path,
+        outputApksPath: Path,
         universal: Boolean = true,
         keyStoreModel: KeyStoreModel? = null
-    ): Path {
+    ) {
 
-        val outputPath = aabPath.parent.resolve("output.apks")
+        val cmd = StringBuilder("${cmdName()} build-apks --bundle=$aabPath --output=${outputApksPath} ")
 
-        val cmdList = mutableListOf(
-            "java",
-            "-jar",
-            assetsManager.getBundleToolJarPath().toString(),
-            "build-apks",
-            "--overwrite",  // 覆盖已有的文件
-            "--bundle=$aabPath",
-            "--output=${outputPath}",
-        )
+        keyStoreModel?.let {
+            cmd.append("--ks=${it.keyStoreFile.absolutePath} ")
+            cmd.append("--ks-pass=pass:${it.keystorePass} ")
+            cmd.append("--ks-key-alias=${it.keyAlias} ")
+            cmd.append("--key-pass=pass:${it.keyPass} ")
+        }
 
         // 包含所有代码和资源（功能模块）
         if (universal) {
-            cmdList.add("--mode=universal")
+            cmd.append("--mode=universal ")
         }
 
-        keyStoreModel?.let {
-            cmdList.apply {
-                add("--ks=${it.keyStoreFile.absolutePath}")
-                add("--ks-pass=pass:${it.keystorePass}")
-                add("--ks-key-alias=${it.keyAlias}")
-                add("--key-pass=pass:${it.keyPass}")
-            }
-        }
+        // 覆盖之前生成的包
+        cmd.append("--overwrite")
 
-        exec(
-            cmdList,
-            onLine = {
-                logger("执行中输出：$it")
-            },
-            onComplete = {
-                logger("执行结束:$it")
-            }
-        )
-
-        return outputPath
+        run(cmd = cmd.toString().trim())
     }
 
-    fun installApks(apksPath: Path, devices: Set<String>) {
-        devices.forEach { device ->
-            exec(
-                "java",
-                "-jar",
-                assetsManager.getBundleToolJarPath().toString(),
-                "install-apks",
-                "--apks=${apksPath}",
-                "--device-id=${device}",
-                onLine = {
-                    logger("安装输出：$it")
-                },
-                onComplete = {
-                    logger("执行结束：$it")
-                }
-            )
+    fun installApks(apksPath: Path, devices: Set<String> = emptySet()) {
+        if (devices.isEmpty()) {
+            run(cmd = "${cmdName()} install-apks --apks=$apksPath")
+        } else {
+            devices.forEach { device ->
+                run(cmd = "${cmdName()} install-apks --apks=$apksPath --device-id=$device")
+            }
         }
     }
 
+    override fun cmdName(): String {
+        return CmdType.BundleTool.cmdName
+    }
+
+    override fun cmdPath(): String {
+        return "java -jar ${assetsManager.getBundleToolJarPath()}"
+    }
 }

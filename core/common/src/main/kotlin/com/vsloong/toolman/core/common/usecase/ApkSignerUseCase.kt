@@ -25,7 +25,7 @@ class ApkSignerUseCase(
     }
 
     override fun cmdName(): String {
-        return CmdConstant.ApkSigner.cmdName
+        return CmdType.ApkSigner.cmdName
     }
 
     override fun cmdPath(): String {

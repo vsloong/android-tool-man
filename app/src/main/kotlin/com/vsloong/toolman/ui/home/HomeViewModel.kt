@@ -8,6 +8,7 @@ import com.vsloong.toolman.core.common.usecase.AdbUseCase
 import com.vsloong.toolman.core.common.usecase.BundleUseCase
 import com.vsloong.toolman.core.common.utils.logger
 import com.vsloong.toolman.manager.AssetsManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.nio.file.Files
 import java.nio.file.Path
@@ -21,7 +22,7 @@ class HomeViewModel(
     val devices = mutableStateListOf<AdbDeviceInfo>()
 
     init {
-        devices.addAll(adbUseCase.getDevices())
+        refreshDevices()
     }
 
 
@@ -38,7 +39,14 @@ class HomeViewModel(
         }
     )
 
-    fun install(paths: List<Path>) {
+    fun refreshDevices() {
+        viewModelScope.launch(Dispatchers.IO) {
+            devices.clear()
+            devices.addAll(adbUseCase.getDevices())
+        }
+    }
+
+    fun install(paths: List<Path>, devices: Set<AdbDeviceInfo>) {
 
         if (paths.size > 1) {
             logger("不支持多选文件哦")
@@ -51,19 +59,14 @@ class HomeViewModel(
             return
         }
 
-        if (selectDevices.isEmpty()) {
-            logger("请先选择设备")
-            return
-        }
-
         // 文件后缀
         when (val extension = path.extension) {
             // 安装APK
             "apk" -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     adbUseCase.installApk(
                         apkPath = path,
-                        devices = selectDevices
+                        devices = devices
                             .map {
                                 it.deviceId
                             }
@@ -74,11 +77,12 @@ class HomeViewModel(
 
             // 安装AAB
             "aab" -> {
-                viewModelScope.launch {
-                    val outputPath = bundleUseCase.buildApks(aabPath = path)
+                viewModelScope.launch(Dispatchers.IO) {
+                    val outputPath = path.parent.resolve("sample.apks")
+                    bundleUseCase.buildApks(aabPath = path, outputApksPath = outputPath)
                     bundleUseCase.installApks(
                         apksPath = outputPath,
-                        devices = selectDevices
+                        devices = devices
                             .map {
                                 it.deviceId
                             }.toSet()

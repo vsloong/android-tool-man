@@ -20,7 +20,7 @@ class AdbUseCase(
     private val adbPath = assetsManager.getAdbPath()
 
     override fun cmdName(): String {
-        return CmdConstant.Adb.cmdName
+        return CmdType.Adb.cmdName
     }
 
     override fun cmdPath(): String {
@@ -71,14 +71,12 @@ class AdbUseCase(
      * 安装apk文件到设备
      */
     fun installApk(apkPath: Path, devices: Set<String>) {
-        devices.forEach { device ->
-            exec(
-                adbPath.toString(),
-                "-s",
-                device,
-                "install",
-                apkPath.toString()
-            )
+        if (devices.isEmpty()) {
+            run(cmd = "${cmdName()} install $apkPath")
+        } else {
+            devices.forEach { device ->
+                run(cmd = "${cmdName()} -s $device install $apkPath")
+            }
         }
     }
 

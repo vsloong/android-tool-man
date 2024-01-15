@@ -10,17 +10,22 @@ fun main() {
 
     val bundleUseCase = BundleUseCase(assetsManager = TestAssetsManager)
 
-    val apksPath = bundleUseCase.buildApks(
-//        aabPath = Path("E:\\Bundle\\sample.aab"),
-        aabPath = Path("/Users/dragon/Temp/Bundle/sample.aab"),
-        universal = true
-    )
 
-    logger("apks文件构建完毕 ：$apksPath")
+    val aabPath = Path("/Users/dragon/Temp/Bundle/sample.aab")
 
-    unzip(
-        zipFilePath = apksPath,
-    )
+    val outputApksPath = aabPath.parent.resolve("sample.apks")
 
-    logger("apks文件解压完毕")
+//    bundleUseCase.buildApks(
+//        aabPath = aabPath,
+//        outputApksPath = outputApksPath,
+//    )
+//    logger("apks文件构建完毕 ：$outputApksPath")
+//
+//
+//    unzip(
+//        zipFilePath = outputApksPath,
+//    )
+//    logger("apks文件解压完毕")
+
+    bundleUseCase.installApks(apksPath = outputApksPath )
 }

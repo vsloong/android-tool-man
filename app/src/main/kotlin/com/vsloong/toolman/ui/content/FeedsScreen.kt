@@ -105,7 +105,7 @@ class FeedsScreen : BaseScreen {
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                FunctionItem()
+//                FunctionItem()
 
                 Spacer(modifier = Modifier.fillMaxWidth().weight(1f))
 

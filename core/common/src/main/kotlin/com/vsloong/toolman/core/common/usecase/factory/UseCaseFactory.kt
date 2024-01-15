@@ -23,19 +23,19 @@ class UseCaseFactory(
 
         if (useCase == null) {
             useCase = when (cmdName) {
-                CmdConstant.Adb.cmdName -> {
+                CmdType.Adb.cmdName -> {
                     AdbUseCase(assetsManager = assetsManager)
                 }
 
-                CmdConstant.ApkSigner.cmdName -> {
+                CmdType.ApkSigner.cmdName -> {
                     ApkSignerUseCase(assetsManager = assetsManager)
                 }
 
-                CmdConstant.VasDolly.cmdName -> {
+                CmdType.VasDolly.cmdName -> {
                     VasDollyUseCase(assetsManager = assetsManager)
                 }
 
-                CmdConstant.Walle.cmdName -> {
+                CmdType.Walle.cmdName -> {
                     WalleUseCase(assetsManager = assetsManager)
                 }
 

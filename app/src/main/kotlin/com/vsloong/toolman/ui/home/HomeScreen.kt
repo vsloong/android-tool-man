@@ -29,9 +29,8 @@ class HomeScreen : BaseScreen {
                 modifier = Modifier.width(400.dp)
                     .height(200.dp),
                 onDrop = {
-                    homeViewModel.install(it)
+
                 },
-                dashedBorderColor = R.colors.primary
             ) {
 
             }

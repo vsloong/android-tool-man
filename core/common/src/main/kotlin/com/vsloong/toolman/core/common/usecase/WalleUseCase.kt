@@ -3,7 +3,6 @@ package com.vsloong.toolman.core.common.usecase
 import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.usecase.interfaces.IChannelUseCase
 import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
-import com.vsloong.toolman.core.common.utils.exec
 import java.nio.file.Path
 import kotlin.io.path.nameWithoutExtension
 
@@ -46,7 +45,7 @@ class WalleUseCase(
     }
 
     override fun cmdName(): String {
-        return CmdConstant.Walle.cmdName
+        return CmdType.Walle.cmdName
     }
 
     override fun cmdPath(): String {

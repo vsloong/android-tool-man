@@ -6,5 +6,6 @@ sealed class CmdType(val cmdName: String) {
     object VasDolly : CmdType(cmdName = "vasdolly")
     object Walle : CmdType(cmdName = "walle")
     object BundleTool : CmdType(cmdName = "bundletool")
+    object ApkTool : CmdType(cmdName = "apktool")
 
 }

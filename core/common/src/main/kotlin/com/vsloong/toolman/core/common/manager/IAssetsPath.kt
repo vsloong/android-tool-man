@@ -13,6 +13,7 @@ interface IAssetsPath {
     val vasDollyJarFileName: String get() = "vas_dolly_3.0.6.jar"
     val walleJarFileName: String get() = "walle_1.1.6.jar"
     val apkSignerJarFileName: String get() = "apksigner.jar"
+    val apkToolJarFileName: String get() = "apktool_2.9.2.jar"
 
     fun getAssetsPath(): Path
 
@@ -45,5 +46,9 @@ interface IAssetsPath {
 
     fun getApkSignerJarPath(): Path {
         return getAssetsPath().resolve(apkSignerJarFileName)
+    }
+
+    fun getApkToolJarPath(): Path {
+        return getAssetsPath().resolve(apkToolJarFileName)
     }
 }

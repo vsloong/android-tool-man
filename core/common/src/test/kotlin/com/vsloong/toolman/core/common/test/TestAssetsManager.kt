@@ -4,6 +4,7 @@ import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.utils.isLinux
 import com.vsloong.toolman.core.common.utils.isMacOs
 import com.vsloong.toolman.core.common.utils.isWindows
+import test_local_ignore.PROJECT_PATH
 import java.nio.file.Path
 import kotlin.io.path.Path
 
@@ -19,11 +20,9 @@ object TestAssetsManager : IAssetsPath {
      */
     override
     fun getAssetsPath(): Path {
-        val projectPath = if (isMacOs()) {
-            Path("/Users/dragon/Workspace/Desktop/android-tool-man")
-        } else {
-            Path("D:\\Works_Compose_Desktop\\android-tool-man")
-        }
+
+        // 当前工程的本机地址
+        val projectPath = Path(PROJECT_PATH)
 
         return projectPath
             .resolve("assets")
@@ -59,6 +58,12 @@ object TestAssetsManager : IAssetsPath {
         return getAssetsPath()
             .resolve("common")
             .resolve(apkSignerJarFileName)
+    }
+
+    override fun getApkToolJarPath(): Path {
+        return getAssetsPath()
+            .resolve("common")
+            .resolve(apkToolJarFileName)
     }
 
     private fun getPlatForm(): String {

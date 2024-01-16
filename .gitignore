@@ -42,3 +42,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### 本地测试代码的文件夹（）
+test_local_ignore/

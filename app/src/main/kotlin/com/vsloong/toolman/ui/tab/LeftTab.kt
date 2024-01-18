@@ -21,13 +21,15 @@ import com.vsloong.toolman.ui.themes.R
 
 
 @Composable
-fun LeftTab() {
+fun LeftTab(
+    currentTab: TabType,
+    leftTabEvent: LeftTabEvent
+) {
     Column(
         modifier = Modifier.fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
 
         Text(
             text = "ATM",
@@ -42,13 +44,15 @@ fun LeftTab() {
         TabItem(
             resourcePath = "tab_left_custom.svg",
             tabName = "Message Feed",
-            isSelected = true
+            isSelected = currentTab == TabType.Feed,
+            onClick = leftTabEvent.onHomeClick
         )
 
         TabItem(
             resourcePath = "tab_left_custom.svg",
-            tabName = "MessageFeed",
-            isSelected = false
+            tabName = "Feature",
+            isSelected = currentTab == TabType.Feature,
+            onClick = leftTabEvent.onFeatureClick
         )
 
     }
@@ -58,7 +62,8 @@ fun LeftTab() {
 private fun TabItem(
     resourcePath: String,
     tabName: String,
-    isSelected: Boolean = false
+    isSelected: Boolean = false,
+    onClick: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -73,7 +78,7 @@ private fun TabItem(
                 }
             )
             .clickable {
-
+                onClick.invoke()
             }
             .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

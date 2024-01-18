@@ -15,10 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
+import com.vsloong.toolman.manager.DeviceManager
 import com.vsloong.toolman.ui.content.FeedsScreen
 import com.vsloong.toolman.ui.device.DeviceContent
 import com.vsloong.toolman.ui.home.HomeViewModel
+import com.vsloong.toolman.ui.screen.FeatureScreen
 import com.vsloong.toolman.ui.tab.LeftTab
+import com.vsloong.toolman.ui.tab.LeftTabEvent
 import com.vsloong.toolman.ui.themes.R
 
 @Composable
@@ -55,31 +58,44 @@ fun main() = application {
                     modifier = Modifier.fillMaxWidth().height(46.dp).background(color = Color.LightGray)
                 )
 
-                Row(modifier = Modifier.fillMaxSize()) {
+                Navigator(FeedsScreen()) { navigator ->
 
-                    // 左侧栏
-                    Column(modifier = Modifier.fillMaxSize().weight(1f)) {
-                        LeftTab()
-                    }
+                    Row(modifier = Modifier.fillMaxSize()) {
 
-                    // 中间功能栏
-                    Column(modifier = Modifier.fillMaxSize().weight(3f)) {
-                        Navigator(FeedsScreen()) {
+                        // 左侧栏
+                        Column(modifier = Modifier.fillMaxSize().weight(1f)) {
+                            LeftTab(
+                                currentTab = homeViewModel.currentTab.value,
+                                leftTabEvent = LeftTabEvent(
+                                    onHomeClick = {
+                                        homeViewModel.tabEvent.onHomeClick.invoke()
+                                        navigator.replace(FeedsScreen())
+                                    },
+                                    onFeatureClick = {
+                                        homeViewModel.tabEvent.onFeatureClick.invoke()
+                                        navigator.replace(FeatureScreen())
+                                    }
+                                )
+                            )
+                        }
+
+                        // 中间功能栏
+                        Column(modifier = Modifier.fillMaxSize().weight(3f)) {
                             CurrentScreen()
                         }
-                    }
 
-                    // 右侧栏
-                    Column(modifier = Modifier.fillMaxSize().weight(1f)) {
-                        DeviceContent(
-                            devices = homeViewModel.devices,
-                            onFileDrop = { files, device ->
-                                homeViewModel.install(files, setOf(device))
-                            },
+                        // 右侧栏
+                        Column(modifier = Modifier.fillMaxSize().weight(1f)) {
+                            DeviceContent(
+                                devices = DeviceManager.devices,
+                                onFileDrop = { files, device ->
+                                    homeViewModel.install(files, setOf(device))
+                                },
 
-                            onRefreshClick = {
-                                homeViewModel.refreshDevices()
-                            })
+                                onRefreshClick = {
+                                    homeViewModel.refreshDevices()
+                                })
+                        }
                     }
                 }
 

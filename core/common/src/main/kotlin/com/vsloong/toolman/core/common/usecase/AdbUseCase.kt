@@ -1,6 +1,7 @@
 package com.vsloong.toolman.core.common.usecase
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
+import com.vsloong.toolman.core.common.manager.WorkspaceManager
 import com.vsloong.toolman.core.common.model.AdbDeviceInfo
 import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import com.vsloong.toolman.core.common.utils.exec
@@ -25,6 +26,12 @@ class AdbUseCase(
 
     override fun cmdPath(): String {
         return assetsManager.getAdbPath().toString()
+    }
+
+    init {
+        val path = WorkspaceManager.phoneCachePath
+        mkdir(path = path.parent.toString())
+        mkdir(path = path.toString())
     }
 
     /**
@@ -153,7 +160,7 @@ class AdbUseCase(
      * 截图
      */
     fun screenCap(deviceId: String, deviceFile: String) {
-        exec(cmd = "$adbPath -s $deviceId shell screencap $deviceFile")
+        exec(cmd = "$adbPath -s $deviceId shell screencap -p $deviceFile")
     }
 
     /**
@@ -162,20 +169,11 @@ class AdbUseCase(
     fun shellCopy(
         apkInstallFilePath: String, phoneCacheDirPath: String
     ) {
-
-        checkPhonePath(phoneCacheDirPath)
-
         exec(cmd = "$adbPath shell cp -f $apkInstallFilePath $phoneCacheDirPath")
     }
 
-    fun checkPhonePath(path: String) {
+    fun mkdir(path: String) {
         val phonePath = Path(path)
-//        val dir = if (Files.isDirectory(phonePath)) {
-//            phonePath
-//        } else {
-//            phonePath.parent
-//        }
-
         exec(cmd = "$adbPath shell mkdir $phonePath")
     }
 

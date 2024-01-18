@@ -8,6 +8,9 @@ import com.vsloong.toolman.core.common.usecase.AdbUseCase
 import com.vsloong.toolman.core.common.usecase.BundleUseCase
 import com.vsloong.toolman.core.common.utils.logger
 import com.vsloong.toolman.manager.AssetsManager
+import com.vsloong.toolman.manager.DeviceManager
+import com.vsloong.toolman.ui.tab.LeftTabEvent
+import com.vsloong.toolman.ui.tab.TabType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.nio.file.Files
@@ -16,10 +19,12 @@ import kotlin.io.path.extension
 
 class HomeViewModel(
     private val adbUseCase: AdbUseCase = AdbUseCase(assetsManager = AssetsManager),
-    private val bundleUseCase: BundleUseCase = BundleUseCase(assetsManager = AssetsManager)
+    private val bundleUseCase: BundleUseCase = BundleUseCase(assetsManager = AssetsManager),
+    private val deviceManager: DeviceManager = DeviceManager
 ) : BaseViewModel() {
 
     val devices = mutableStateListOf<AdbDeviceInfo>()
+    val currentTab = mutableStateOf<TabType>(TabType.Feed)
 
     init {
         refreshDevices()
@@ -39,10 +44,18 @@ class HomeViewModel(
         }
     )
 
+    val tabEvent = LeftTabEvent(
+        onFeatureClick = {
+            currentTab.value = TabType.Feature
+        },
+        onHomeClick = {
+            currentTab.value = TabType.Feed
+        }
+    )
+
     fun refreshDevices() {
         viewModelScope.launch(Dispatchers.IO) {
-            devices.clear()
-            devices.addAll(adbUseCase.getDevices())
+            deviceManager.addDevices(adbUseCase.getDevices())
         }
     }
 

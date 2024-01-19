@@ -1,14 +1,10 @@
-package com.vsloong.toolman.ui.content
+package com.vsloong.toolman.ui.screen.feeds
 
 import androidx.compose.runtime.mutableStateListOf
 import com.vsloong.toolman.base.BaseViewModel
-import com.vsloong.toolman.core.common.manager.WorkspaceManager
 import com.vsloong.toolman.core.common.model.CmdOutput
-import com.vsloong.toolman.core.common.usecase.AdbUseCase
-import com.vsloong.toolman.core.common.usecase.ApkSignerUseCase
 import com.vsloong.toolman.core.common.usecase.factory.UseCaseFactory
 import com.vsloong.toolman.manager.AssetsManager
-import java.io.File
 
 class FeedsViewModel(
     private val cmdUseCaseFactory: UseCaseFactory = UseCaseFactory(

@@ -1,5 +1,6 @@
-package com.vsloong.toolman.ui.screen
+package com.vsloong.toolman.ui.screen.feature
 
+import androidx.compose.runtime.mutableStateOf
 import com.vsloong.toolman.base.BaseViewModel
 import com.vsloong.toolman.core.common.manager.WorkspaceManager
 import com.vsloong.toolman.core.common.usecase.AdbUseCase
@@ -31,6 +32,8 @@ class FeatureViewModel(
                                 remotePath = deviceFile.toString(),
                                 localPath = localFile.toString()
                             )
+
+                            screenCap.value = localFile.toString()
                         }
                     }
                 }
@@ -38,5 +41,7 @@ class FeatureViewModel(
 
         }
     )
+
+    val screenCap = mutableStateOf("")
 
 }

@@ -7,8 +7,12 @@ object DeviceManager {
 
     val devices = mutableStateListOf<AdbDeviceInfo>()
 
-    fun addDevices(list: Set<AdbDeviceInfo>){
+    fun addDevices(list: Set<AdbDeviceInfo>) {
         devices.clear()
         devices.addAll(list)
+    }
+
+    fun currentDeviceId(): String {
+        return devices.first().deviceId
     }
 }

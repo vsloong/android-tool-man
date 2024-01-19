@@ -1,16 +1,13 @@
-package com.vsloong.toolman.ui.content
+package com.vsloong.toolman.ui.screen.feeds
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +23,6 @@ import com.vsloong.toolman.core.common.model.CmdOutput
 import com.vsloong.toolman.ui.themes.R
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppTextFiled
-import kotlinx.coroutines.launch
 
 class FeedsScreen : BaseScreen {
 

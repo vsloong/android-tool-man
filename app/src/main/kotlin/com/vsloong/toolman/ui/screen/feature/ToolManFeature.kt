@@ -1,4 +1,4 @@
-package com.vsloong.toolman.ui.screen
+package com.vsloong.toolman.ui.screen.feature
 
 sealed interface ToolManFeature {
 

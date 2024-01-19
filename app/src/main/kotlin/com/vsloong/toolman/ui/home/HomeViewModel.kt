@@ -50,6 +50,9 @@ class HomeViewModel(
         },
         onHomeClick = {
             currentTab.value = TabType.Feed
+        },
+        onAppsClick = {
+            currentTab.value = TabType.Apps
         }
     )
 

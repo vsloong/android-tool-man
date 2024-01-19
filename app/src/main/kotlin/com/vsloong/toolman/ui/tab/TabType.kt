@@ -5,4 +5,6 @@ interface TabType {
     object Feature : TabType
 
     object Feed : TabType
+
+    object Apps : TabType
 }

@@ -3,6 +3,7 @@ package com.vsloong.toolman.core.common.usecase
 import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.manager.WorkspaceManager
 import com.vsloong.toolman.core.common.model.AdbDeviceInfo
+import com.vsloong.toolman.core.common.model.CmdOutput
 import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import com.vsloong.toolman.core.common.utils.exec
 import com.vsloong.toolman.core.common.utils.logger
@@ -204,8 +205,19 @@ class AdbUseCase(
         )
     }
 
-    fun packages() {
-        exec(cmd = "$adbPath shell pm list packages -f")
+    /**
+     * 获取三方应用
+     */
+    fun packages(deviceId: String): List<String> {
+        val output = run(cmd = "${cmdName()} -s $deviceId shell pm list packages -3")
+
+        return output.output.split("package:")
+            .map {
+                it.trim()
+            }
+            .filter {
+                it.isNotBlank()
+            }
     }
 
     /**

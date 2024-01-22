@@ -53,6 +53,9 @@ class HomeViewModel(
         },
         onAppsClick = {
             currentTab.value = TabType.Apps
+        },
+        onChannelClick = {
+            currentTab.value = TabType.Channel
         }
     )
 

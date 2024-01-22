@@ -31,8 +31,7 @@ fun AppTextFiled(
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
         ),
-        modifier = modifier.clip(RoundedCornerShape(50))
-            .background(R.colors.background),
+        modifier = modifier.clip(RoundedCornerShape(50)),
         onValueChange = onValueChange,
         decorationBox = @Composable { innerTextField ->
             // places leading icon, text field with label and placeholder, trailing icon

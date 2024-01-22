@@ -27,6 +27,7 @@ import com.vsloong.toolman.manager.DeviceManager
 import com.vsloong.toolman.ui.screen.feeds.FeedsScreen
 import com.vsloong.toolman.ui.home.HomeViewModel
 import com.vsloong.toolman.ui.screen.apps.AppsScreen
+import com.vsloong.toolman.ui.screen.channel.ChannelScreen
 import com.vsloong.toolman.ui.screen.feature.FeatureScreen
 import com.vsloong.toolman.ui.tab.LeftTabEvent
 import com.vsloong.toolman.ui.tab.TabType
@@ -88,6 +89,10 @@ fun main() = application {
                                     onAppsClick = {
                                         homeViewModel.tabEvent.onAppsClick.invoke()
                                         navigator.replace(AppsScreen())
+                                    },
+                                    onChannelClick = {
+                                        homeViewModel.tabEvent.onChannelClick.invoke()
+                                        navigator.replace(ChannelScreen())
                                     }
                                 )
                             )
@@ -185,7 +190,6 @@ private fun DeviceItem(
 }
 
 
-
 @Composable
 fun LeftTab(
     currentTab: TabType,
@@ -226,6 +230,13 @@ fun LeftTab(
             tabName = "Apps",
             isSelected = currentTab == TabType.Apps,
             onClick = leftTabEvent.onAppsClick
+        )
+
+        TabItem(
+            resourcePath = "tab_left_custom.svg",
+            tabName = "Channel",
+            isSelected = currentTab == TabType.Channel,
+            onClick = leftTabEvent.onChannelClick
         )
 
     }

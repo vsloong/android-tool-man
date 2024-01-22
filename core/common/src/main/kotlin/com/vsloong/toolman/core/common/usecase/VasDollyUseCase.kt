@@ -4,6 +4,7 @@ import com.vsloong.toolman.core.common.manager.IAssetsPath
 import com.vsloong.toolman.core.common.usecase.interfaces.IChannelUseCase
 import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import com.vsloong.toolman.core.common.utils.exec
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.nameWithoutExtension
 
@@ -22,6 +23,13 @@ class VasDollyUseCase(
 //                        "${apkPath.parent.resolve("${apkName}_${channel}.apk")}"
 //            )
 
+            val outputFile = apkPath.parent.resolve("${apkName}_${channel}.apk")
+
+            // VasDolly需要先创建文件
+            if (!Files.exists(outputFile)) {
+                Files.createFile(outputFile)
+            }
+
             exec(
                 "java",
                 "-jar",
@@ -31,7 +39,7 @@ class VasDollyUseCase(
                 channel,
                 "-f", //FastMode，生成渠道包时不进行强校验，速度可提升10倍以上
                 apkPath.toString(),
-                apkPath.parent.resolve("${apkName}_${channel}.apk").toString(),
+                outputFile.toString(),
             )
         }
     }

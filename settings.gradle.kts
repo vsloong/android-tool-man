@@ -23,3 +23,4 @@ rootProject.name = "android-tool-man"
 include(":app")
 
 include(":core:common")
+include(":core:server")

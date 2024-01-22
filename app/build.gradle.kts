@@ -21,6 +21,8 @@ dependencies {
 
     // 依赖子模块
     implementation(project(":core:common"))
+    implementation(project(":core:server"))
+    implementation(project(":core:image"))
 }
 
 group = "com.vsloong"

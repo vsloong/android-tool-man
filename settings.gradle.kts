@@ -24,3 +24,4 @@ include(":app")
 
 include(":core:common")
 include(":core:server")
+include(":core:image")

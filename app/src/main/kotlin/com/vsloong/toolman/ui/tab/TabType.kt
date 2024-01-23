@@ -5,4 +5,5 @@ interface TabType {
     object Feed : TabType
     object Apps : TabType
     object Channel : TabType
+    object Sign : TabType
 }

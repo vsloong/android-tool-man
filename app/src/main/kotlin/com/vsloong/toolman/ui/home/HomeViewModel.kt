@@ -56,6 +56,9 @@ class HomeViewModel(
         },
         onChannelClick = {
             currentTab.value = TabType.Channel
+        },
+        onSignClick = {
+            currentTab.value = TabType.Sign
         }
     )
 

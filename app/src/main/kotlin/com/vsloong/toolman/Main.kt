@@ -29,6 +29,7 @@ import com.vsloong.toolman.ui.home.HomeViewModel
 import com.vsloong.toolman.ui.screen.apps.AppsScreen
 import com.vsloong.toolman.ui.screen.channel.ChannelScreen
 import com.vsloong.toolman.ui.screen.feature.FeatureScreen
+import com.vsloong.toolman.ui.screen.sign.SignScreen
 import com.vsloong.toolman.ui.tab.LeftTabEvent
 import com.vsloong.toolman.ui.tab.TabType
 import com.vsloong.toolman.ui.themes.R
@@ -50,6 +51,11 @@ fun appWindowState(
 
 val homeViewModel = HomeViewModel()
 
+
+/**
+ * 请参考
+ * https://github.com/JetBrains/compose-multiplatform
+ */
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
@@ -93,6 +99,10 @@ fun main() = application {
                                     onChannelClick = {
                                         homeViewModel.tabEvent.onChannelClick.invoke()
                                         navigator.replace(ChannelScreen())
+                                    },
+                                    onSignClick = {
+                                        homeViewModel.tabEvent.onSignClick.invoke()
+                                        navigator.replace(SignScreen())
                                     }
                                 )
                             )
@@ -237,6 +247,13 @@ fun LeftTab(
             tabName = "Channel",
             isSelected = currentTab == TabType.Channel,
             onClick = leftTabEvent.onChannelClick
+        )
+
+        TabItem(
+            resourcePath = "tab_left_custom.svg",
+            tabName = "Sign",
+            isSelected = currentTab == TabType.Sign,
+            onClick = leftTabEvent.onSignClick
         )
 
     }

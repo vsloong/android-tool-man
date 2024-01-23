@@ -54,6 +54,14 @@ object TestAssetsManager : IAssetsPath {
             .resolve("adb")
     }
 
+    override fun getZipAlignPath(): Path {
+        return getAssetsPath()
+            .resolve(
+                getPlatForm()
+            )
+            .resolve("zipalign")
+    }
+
     override fun getApkSignerJarPath(): Path {
         return getAssetsPath()
             .resolve("common")

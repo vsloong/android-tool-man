@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -22,8 +23,10 @@ import com.vsloong.toolman.ui.themes.R
 @Composable
 fun AppTextFiled(
     text: String,
+    hint: String = "",
+    modifier: Modifier = Modifier,
+    background: Color = Color(0xFFF3F1F1),
     onValueChange: (String) -> Unit,
-    modifier: Modifier
 ) {
 
     BasicTextField(
@@ -31,7 +34,9 @@ fun AppTextFiled(
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
         ),
-        modifier = modifier.clip(RoundedCornerShape(50)),
+        modifier = modifier
+            .clip(RoundedCornerShape(50))
+            .background(color = background),
         onValueChange = onValueChange,
         decorationBox = @Composable { innerTextField ->
             // places leading icon, text field with label and placeholder, trailing icon
@@ -41,7 +46,7 @@ fun AppTextFiled(
                 contentAlignment = Alignment.CenterStart
             ) {
                 if (text.isEmpty()) {
-                    Text(text = "请输入")
+                    Text(text = hint)
                 }
 
                 innerTextField()

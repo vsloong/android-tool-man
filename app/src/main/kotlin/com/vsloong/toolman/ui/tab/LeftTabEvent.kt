@@ -5,4 +5,5 @@ data class LeftTabEvent(
     val onFeatureClick: () -> Unit,
     val onAppsClick: () -> Unit,
     val onChannelClick: () -> Unit,
+    val onSignClick: () -> Unit,
 )

@@ -44,6 +44,17 @@ interface IAssetsPath {
         return path
     }
 
+    fun getZipAlignPath(): Path {
+        val path = getAssetsPath().resolve("zipalign")
+        if (Files.exists(path)) {
+            val file = path.toFile()
+            if (!file.canExecute()) {
+                file.setExecutable(true)
+            }
+        }
+        return path
+    }
+
     fun getApkSignerJarPath(): Path {
         return getAssetsPath().resolve(apkSignerJarFileName)
     }

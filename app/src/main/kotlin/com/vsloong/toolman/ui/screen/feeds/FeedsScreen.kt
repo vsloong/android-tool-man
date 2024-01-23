@@ -29,7 +29,6 @@ class FeedsScreen : BaseScreen {
     @Composable
     override fun Content() {
         val feedsViewModel = rememberViewModel { FeedsViewModel() }
-        val scope = rememberCoroutineScope()
         val lazyListState = rememberLazyListState()
 
         Column(

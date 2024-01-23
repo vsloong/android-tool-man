@@ -54,8 +54,8 @@ fun TileImage2(
         val totalWidth = size.width / pattern.width
         val totalHeight = size.height / pattern.height
 
-        var x = 0f
-        var y = 0f
+        var x: Float
+        var y: Float
         for (i in 0..totalHeight.toInt()) {
             y = (i * pattern.height).toFloat()
             for (j in 0..totalWidth.toInt()) {

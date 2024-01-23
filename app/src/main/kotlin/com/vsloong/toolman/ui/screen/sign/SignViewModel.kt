@@ -1,5 +1,6 @@
 package com.vsloong.toolman.ui.screen.sign
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -38,6 +39,13 @@ class SignViewModel(
         },
         onResignClick = {
             signState.value = SignState.NeedSign
+        },
+        onSelectKeystoreModel = {
+            if (selectKeystoreModel.value == it) {
+                selectKeystoreModel.value = KeystoreModel()
+            } else {
+                selectKeystoreModel.value = it
+            }
         }
     )
 
@@ -48,9 +56,18 @@ class SignViewModel(
     val keyPass = mutableStateOf("")
 
 
-    // 已签名的信息
+    // 已签名的APK信息
     val signInfo = mutableStateOf(SignInfo())
     val signState = mutableStateOf<SignState>(SignState.Idle)
+
+    // 选中的已有的签名信息
+    val keystoreInfo = mutableStateListOf<KeystoreModel>()
+    val selectKeystoreModel = mutableStateOf(KeystoreModel())
+
+    init {
+        keystoreInfo.clear()
+        keystoreInfo.addAll(getKeystoreInfo())
+    }
 
     /**
      * 检测签名
@@ -86,24 +103,40 @@ class SignViewModel(
                 outputApkFile = alignedApkFile
             )
 
-            // 再签名
-            val signedApkFile = alignedApkFile.parent.resolve("${alignedApkFile.nameWithoutExtension}_signed.apk")
-            apkSignerUseCase.sign(
-                apkFile = alignedApkFile,
-                keystoreFile = keystoreFile.value,
-                keystorePass = keystorePass.value,
-                keyAlias = keyAlias.value,
-                keyPass = keyPass.value,
-                outputApkFile = signedApkFile
-            )
 
-            // 存储签名信息
-            saveKeystoreInfo(
-                keystoreFilePath = keystoreFile.value,
-                keystorePass = keystorePass.value,
-                keyAlias = keyAlias.value,
-                keyPass = keyPass.value,
-            )
+            // 选择了签名信息则使用选择的签名
+            if (selectKeystoreModel.value.hasData()) {
+                // 直接使用选择的签名信息进行签名
+                val signedApkFile = alignedApkFile.parent.resolve("${alignedApkFile.nameWithoutExtension}_signed.apk")
+                apkSignerUseCase.sign(
+                    apkFile = alignedApkFile,
+                    keystoreFile = selectKeystoreModel.value.getKeystoreFilePath(),
+                    keystorePass = selectKeystoreModel.value.keystorePass,
+                    keyAlias = selectKeystoreModel.value.keyAlias,
+                    keyPass = selectKeystoreModel.value.keyPass,
+                    outputApkFile = signedApkFile
+                )
+            } else {
+                // 先签名
+                val signedApkFile = alignedApkFile.parent.resolve("${alignedApkFile.nameWithoutExtension}_signed.apk")
+                apkSignerUseCase.sign(
+                    apkFile = alignedApkFile,
+                    keystoreFile = keystoreFile.value,
+                    keystorePass = keystorePass.value,
+                    keyAlias = keyAlias.value,
+                    keyPass = keyPass.value,
+                    outputApkFile = signedApkFile
+                )
+
+                // 存储签名信息
+                saveKeystoreInfo(
+                    keystoreFilePath = keystoreFile.value,
+                    keystorePass = keystorePass.value,
+                    keyAlias = keyAlias.value,
+                    keyPass = keyPass.value,
+                )
+            }
+
         }
     }
 

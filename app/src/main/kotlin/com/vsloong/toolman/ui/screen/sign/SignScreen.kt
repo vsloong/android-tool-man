@@ -1,16 +1,25 @@
 package com.vsloong.toolman.ui.screen.sign
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vsloong.toolman.base.BaseScreen
 import com.vsloong.toolman.base.rememberViewModel
+import com.vsloong.toolman.core.common.model.KeystoreModel
 import com.vsloong.toolman.core.common.model.SignInfo
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppProgressBar
@@ -42,31 +51,44 @@ class SignScreen : BaseScreen {
             }
 
             // 如果有签名，显示签名信息，否则展示签名功能区域
-            if (viewModel.signState.value is SignState.Signed) {
-                SignInfoContent(
-                    signInfo = viewModel.signInfo.value,
-                    onResignClick = viewModel.signEvent.onResignClick
-                )
-            } else if (viewModel.signState.value is SignState.UnSign) {
-                UnsignInfoContent(
-                    onResignClick = viewModel.signEvent.onResignClick
-                )
-            } else if (viewModel.signState.value is SignState.NeedSign) {
-                ExecuteSignContent(
-                    signEvent = viewModel.signEvent,
-                    keystoreFile = viewModel.keystoreFile.value.toString(),
-                    keystorePass = viewModel.keystorePass,
-                    keyAlias = viewModel.keyAlias,
-                    keyPass = viewModel.keyPass
-                )
-            } else if (viewModel.signState.value is SignState.Checking) {
-                Text(text = "正在检测签名")
-                AppProgressBar(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(4.dp),
-                    color = Color.Black,
-                    backgroundColor = Color.LightGray
-                )
+            when (viewModel.signState.value) {
+                is SignState.Signed -> {
+                    SignInfoContent(
+                        signInfo = viewModel.signInfo.value,
+                        onResignClick = viewModel.signEvent.onResignClick
+                    )
+                }
+
+                is SignState.UnSign -> {
+                    UnsignInfoContent(
+                        onResignClick = viewModel.signEvent.onResignClick
+                    )
+                }
+
+                is SignState.NeedSign -> {
+                    ExecuteSignContent(
+                        signEvent = viewModel.signEvent,
+                        keystoreFile = viewModel.keystoreFile.value.toString(),
+                        keystorePass = viewModel.keystorePass,
+                        keyAlias = viewModel.keyAlias,
+                        keyPass = viewModel.keyPass,
+                        keystoreInfo = viewModel.keystoreInfo,
+                        selectKeystoreModel = viewModel.selectKeystoreModel.value,
+                        onSelectKeystoreModel = {
+                            viewModel.signEvent.onSelectKeystoreModel.invoke(it)
+                        }
+                    )
+                }
+
+                is SignState.Checking -> {
+                    Text(text = "正在检测签名")
+                    AppProgressBar(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(4.dp),
+                        color = Color.Black,
+                        backgroundColor = Color(0xFFF3F1F1)
+                    )
+                }
             }
         }
     }
@@ -128,6 +150,9 @@ class SignScreen : BaseScreen {
      */
     @Composable
     private fun ExecuteSignContent(
+        keystoreInfo: List<KeystoreModel>,
+        selectKeystoreModel: KeystoreModel,
+        onSelectKeystoreModel: (KeystoreModel) -> Unit,
         signEvent: SignEvent,
         keystoreFile: String,
         keystorePass: MutableState<String>,
@@ -135,6 +160,19 @@ class SignScreen : BaseScreen {
         keyPass: MutableState<String>,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(keystoreInfo) {
+                    KeystoreInfoItem(
+                        keystoreModel = it,
+                        isSelect = it == selectKeystoreModel,
+                        onSelectKeystoreModel = {
+                            onSelectKeystoreModel.invoke(it)
+                        }
+                    )
+                }
+            }
+
             DragAndDropBox(
                 modifier = Modifier.fillMaxWidth()
                     .height(100.dp)
@@ -187,6 +225,49 @@ class SignScreen : BaseScreen {
                 text = "签名",
                 onClick = {
                     signEvent.onSignClick()
+                }
+            )
+        }
+    }
+
+    @Composable
+    private fun KeystoreInfoItem(
+        keystoreModel: KeystoreModel,
+        isSelect: Boolean,
+        onSelectKeystoreModel: () -> Unit
+    ) {
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    color = if (isSelect) {
+                        Color.Black
+                    } else {
+                        Color(0xFFF3F1F1)
+                    }
+                )
+                .clickable {
+                    onSelectKeystoreModel.invoke()
+                }
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = keystoreModel.keyAlias,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isSelect) {
+                    Color.White
+                } else {
+                    Color.Black
+                }
+            )
+
+            Text(
+                text = keystoreModel.keystoreFileName,
+                color = if (isSelect) {
+                    Color.White
+                } else {
+                    Color.Black
                 }
             )
         }

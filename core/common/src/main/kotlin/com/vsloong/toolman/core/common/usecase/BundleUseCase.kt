@@ -2,7 +2,8 @@ package com.vsloong.toolman.core.common.usecase
 
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
-import com.vsloong.toolman.core.common.model.KeyStoreModel
+import com.vsloong.toolman.core.common.manager.WorkspaceManager
+import com.vsloong.toolman.core.common.model.KeystoreModel
 import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import java.lang.StringBuilder
 import java.nio.file.Path
@@ -22,13 +23,16 @@ class BundleUseCase(
         aabPath: Path,
         outputApksPath: Path,
         universal: Boolean = true,
-        keyStoreModel: KeyStoreModel? = null
+        keyStoreModel: KeystoreModel? = null
     ) {
+
+        // 存放签名文件的文件夹
+        val keystoreDirPath = WorkspaceManager.getLocalKeystoreDirPath()
 
         val cmd = StringBuilder("${cmdName()} build-apks --bundle=$aabPath --output=${outputApksPath} ")
 
         keyStoreModel?.let {
-            cmd.append("--ks=${it.keyStoreFile.absolutePath} ")
+            cmd.append("--ks=${keystoreDirPath.resolve(it.keystoreFileName)} ")
             cmd.append("--ks-pass=pass:${it.keystorePass} ")
             cmd.append("--ks-key-alias=${it.keyAlias} ")
             cmd.append("--key-pass=pass:${it.keyPass} ")

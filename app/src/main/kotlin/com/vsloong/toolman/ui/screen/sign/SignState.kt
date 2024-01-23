@@ -5,4 +5,5 @@ interface SignState {
     object Checking : SignState
     object Signed : SignState
     object UnSign : SignState
+    object NeedSign : SignState
 }

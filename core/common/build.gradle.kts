@@ -13,5 +13,8 @@ dependencies {
     // 协程
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
-
+    // jackson
+    api("com.fasterxml.jackson.core:jackson-core:2.16.0")
+    api("com.fasterxml.jackson.core:jackson-databind:2.16.0")
+    api("com.fasterxml.jackson.core:jackson-annotations:2.16.0")
 }

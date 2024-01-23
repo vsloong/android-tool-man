@@ -1,5 +1,6 @@
 package com.vsloong.toolman.core.common.manager
 
+import java.nio.file.Files
 import java.nio.file.Path
 import javax.swing.filechooser.FileSystemView
 import kotlin.io.path.Path
@@ -18,6 +19,20 @@ object WorkspaceManager {
 
 
     // 本地工作区地址（电脑端的地址）
-    private val localWorkspacePath: Path = FileSystemView.getFileSystemView().homeDirectory.resolve(toolsName).toPath()
+    private val localWorkspacePath: Path =
+        FileSystemView.getFileSystemView().defaultDirectory.resolve(toolsName).toPath()
     val localCachePath: Path = localWorkspacePath.resolve("cache")
+
+    /**
+     * 本地存储的签名文件信息的文件夹
+     */
+    fun getLocalKeystoreDirPath(): Path {
+        val path = localWorkspacePath.resolve("keystore")
+
+        if (!Files.exists(path)) {
+            Files.createDirectories(path)
+        }
+
+        return path
+    }
 }

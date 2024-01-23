@@ -43,10 +43,15 @@ class SignScreen : BaseScreen {
 
             // 如果有签名，显示签名信息，否则展示签名功能区域
             if (viewModel.signState.value is SignState.Signed) {
-                Text(text = "该APK文件已签名")
-                SignInfoContent(signInfo = viewModel.signInfo.value)
+                SignInfoContent(
+                    signInfo = viewModel.signInfo.value,
+                    onResignClick = viewModel.signEvent.onResignClick
+                )
             } else if (viewModel.signState.value is SignState.UnSign) {
-                Text(text = "该APK文件未签名")
+                UnsignInfoContent(
+                    onResignClick = viewModel.signEvent.onResignClick
+                )
+            } else if (viewModel.signState.value is SignState.NeedSign) {
                 ExecuteSignContent(
                     signEvent = viewModel.signEvent,
                     keystoreFile = viewModel.keystoreFile.value.toString(),
@@ -72,13 +77,48 @@ class SignScreen : BaseScreen {
      */
     @Composable
     private fun SignInfoContent(
-        signInfo: SignInfo
+        signInfo: SignInfo,
+        onResignClick: () -> Unit,
     ) {
-        SelectionContainer {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(text = "该APK文件已签名")
+
+            SelectionContainer {
+                Text(
+                    text = "md5=${signInfo.md5}\n" +
+                            "sha1=${signInfo.sha1}\n" +
+                            "sha256=${signInfo.sha256}"
+                )
+            }
+
+            AppButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = "重新签名",
+                onClick = onResignClick
+            )
+        }
+    }
+
+    /**
+     * 签名信息
+     */
+    @Composable
+    private fun UnsignInfoContent(
+        onResignClick: () -> Unit,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             Text(
-                text = "md5=${signInfo.md5}\n" +
-                    "sha1=${signInfo.sha1}\n" +
-                    "sha256=${signInfo.sha256}"
+                text = "该文件未签名"
+            )
+
+            AppButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = "去签名",
+                onClick = onResignClick
             )
         }
     }

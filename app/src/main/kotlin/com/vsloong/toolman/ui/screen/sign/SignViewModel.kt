@@ -11,10 +11,15 @@ import com.vsloong.toolman.core.common.model.SignInfo
 import com.vsloong.toolman.core.common.usecase.ApkSignerUseCase
 import com.vsloong.toolman.core.common.usecase.ZipAlignUseCase
 import com.vsloong.toolman.core.common.utils.getFileMD5
+import com.vsloong.toolman.core.common.utils.logger
+import com.vsloong.toolman.core.image.QRCodeUseCase
+import com.vsloong.toolman.core.server.utils.getIpAddress
+import com.vsloong.toolman.manager.AppManager
 import com.vsloong.toolman.manager.AssetsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.copyTo
@@ -23,13 +28,11 @@ import kotlin.io.path.nameWithoutExtension
 
 class SignViewModel(
     private val zipAlignUseCase: ZipAlignUseCase = ZipAlignUseCase(iAssetsPath = AssetsManager),
-    private val apkSignerUseCase: ApkSignerUseCase = ApkSignerUseCase(assetsManager = AssetsManager)
+    private val apkSignerUseCase: ApkSignerUseCase = ApkSignerUseCase(assetsManager = AssetsManager),
+    private val qrCodeUseCase: QRCodeUseCase = QRCodeUseCase(),
 ) : BaseViewModel() {
 
     val signEvent = SignEvent(
-        onKeyStoreFileSelect = {
-            keystoreFile.value = it
-        },
         onApkFileSelect = {
             apkFile.value = it
             check()
@@ -38,7 +41,7 @@ class SignViewModel(
             sign()
         },
         onResignClick = {
-            signState.value = SignState.NeedSign
+            sign()
         },
         onSelectKeystoreModel = {
             if (selectKeystoreModel.value == it) {
@@ -46,14 +49,22 @@ class SignViewModel(
             } else {
                 selectKeystoreModel.value = it
             }
+        },
+        onSaveKeystoreInfo = { keystoreFile, keystorePass, keyAlias, keyPass ->
+            saveKeystoreInfo(
+                keystoreFilePath = keystoreFile,
+                keystorePass = keystorePass,
+                keyAlias = keyAlias,
+                keyPass = keyPass
+            )
+        },
+        onShowQrCode = {
+            showQrCode(it)
         }
     )
 
+    // 选择APK文件
     val apkFile = mutableStateOf(Path(""))
-    val keystoreFile = mutableStateOf(Path(""))
-    val keystorePass = mutableStateOf("")
-    val keyAlias = mutableStateOf("")
-    val keyPass = mutableStateOf("")
 
 
     // 已签名的APK信息
@@ -61,13 +72,24 @@ class SignViewModel(
     val signState = mutableStateOf<SignState>(SignState.Idle)
 
     // 选中的已有的签名信息
-    val keystoreInfo = mutableStateListOf<KeystoreModel>()
     val selectKeystoreModel = mutableStateOf(KeystoreModel())
 
+    // 签名后的文件
+    val outputSignedApkPath = mutableStateOf(Path(""))
+
+    // 已存储的签名数据
+    val keystoreListInfo = mutableStateListOf<KeystoreModel>()
+
     init {
-        keystoreInfo.clear()
-        keystoreInfo.addAll(getKeystoreInfo())
+        keystoreListInfo.clear()
+        keystoreListInfo.add(KeystoreModel())//一个空数据
+        keystoreListInfo.addAll(getKeystoreInfo())
     }
+
+
+    // 展示二维码弹窗
+    val showQrCodeDialog = mutableStateOf(false)
+    val qrCodeImagePath = mutableStateOf(Path(""))
 
     /**
      * 检测签名
@@ -92,6 +114,11 @@ class SignViewModel(
      * 签名
      */
     private fun sign() {
+        if (!selectKeystoreModel.value.hasData()) {
+            logger("请先选择签名信息")
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
 
             val sourceApkFile = apkFile.value
@@ -103,40 +130,46 @@ class SignViewModel(
                 outputApkFile = alignedApkFile
             )
 
+            // 直接使用选择的签名信息进行签名
+            val signedApkFile = alignedApkFile.parent.resolve("${alignedApkFile.nameWithoutExtension}_signed.apk")
+            val result = apkSignerUseCase.sign(
+                apkFile = alignedApkFile,
+                keystoreFile = selectKeystoreModel.value.getKeystoreFilePath(),
+                keystorePass = selectKeystoreModel.value.keystorePass,
+                keyAlias = selectKeystoreModel.value.keyAlias,
+                keyPass = selectKeystoreModel.value.keyPass,
+                outputApkFile = signedApkFile
+            )
 
-            // 选择了签名信息则使用选择的签名
-            if (selectKeystoreModel.value.hasData()) {
-                // 直接使用选择的签名信息进行签名
-                val signedApkFile = alignedApkFile.parent.resolve("${alignedApkFile.nameWithoutExtension}_signed.apk")
-                apkSignerUseCase.sign(
-                    apkFile = alignedApkFile,
-                    keystoreFile = selectKeystoreModel.value.getKeystoreFilePath(),
-                    keystorePass = selectKeystoreModel.value.keystorePass,
-                    keyAlias = selectKeystoreModel.value.keyAlias,
-                    keyPass = selectKeystoreModel.value.keyPass,
-                    outputApkFile = signedApkFile
-                )
-            } else {
-                // 先签名
-                val signedApkFile = alignedApkFile.parent.resolve("${alignedApkFile.nameWithoutExtension}_signed.apk")
-                apkSignerUseCase.sign(
-                    apkFile = alignedApkFile,
-                    keystoreFile = keystoreFile.value,
-                    keystorePass = keystorePass.value,
-                    keyAlias = keyAlias.value,
-                    keyPass = keyPass.value,
-                    outputApkFile = signedApkFile
-                )
+            if (result) {
+                outputSignedApkPath.value = signedApkFile
+            }
+        }
+    }
 
-                // 存储签名信息
-                saveKeystoreInfo(
-                    keystoreFilePath = keystoreFile.value,
-                    keystorePass = keystorePass.value,
-                    keyAlias = keyAlias.value,
-                    keyPass = keyPass.value,
-                )
+    private fun showQrCode(apkPath: Path) {
+        viewModelScope.launch {
+
+            val serverConfig = AppManager.getServerConfig()
+            val serverPath = serverConfig.localServerDirPath
+            val apkName = apkPath.name
+
+            val serverApkPath = serverPath.resolve(apkName)
+
+            // 如果文件不存在，或者文件不相同，则拷贝到服务器文件夹
+            if (!Files.exists(serverApkPath) || getFileMD5(apkPath) != getFileMD5(serverApkPath)
+            ) {
+                logger("需要拷贝文件")
+                apkPath.copyTo(serverApkPath, true)
             }
 
+            val url = "http://${getIpAddress()}:${serverConfig.port}/$apkName"
+
+            val outputImagePath = serverPath.resolve("qr_${System.currentTimeMillis()}.png")
+            qrCodeUseCase.createQRCodeImage(url, outputImagePath = outputImagePath)
+
+            qrCodeImagePath.value = outputImagePath
+            showQrCodeDialog.value = true
         }
     }
 
@@ -186,7 +219,7 @@ class SignViewModel(
             keystorePass = keystorePass,
             keyAlias = keyAlias,
             keyPass = keyPass,
-            keystoreFileMd5 = getFileMD5(keystoreFile.value)
+            keystoreFileMd5 = getFileMD5(keystoreFilePath)
         )
 
         val keystoreInfo = getKeystoreInfo().toMutableList()

@@ -17,18 +17,18 @@ class QRCodeUseCase {
 
     fun createQRCodeImage(
         content: String,
-        imagePath: Path,
+        outputImagePath: Path,
         width: Int = 400,
         height: Int = 400
     ) {
-        if (!Files.exists(imagePath)) {
-            Files.createFile(imagePath)
+        if (!Files.exists(outputImagePath)) {
+            Files.createFile(outputImagePath)
         }
 
         ImageIO.write(
             createBufferedImage(content, width, height),
             "png",
-            imagePath.toFile()
+            outputImagePath.toFile()
         )
     }
 

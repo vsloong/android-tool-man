@@ -8,5 +8,6 @@ sealed class CmdType(val cmdName: String) {
     object BundleTool : CmdType(cmdName = "bundletool")
     object ApkTool : CmdType(cmdName = "apktool")
     object ZipAlign : CmdType(cmdName = "zipalign")
+    object KeyTool : CmdType(cmdName = "keytool")
 
 }

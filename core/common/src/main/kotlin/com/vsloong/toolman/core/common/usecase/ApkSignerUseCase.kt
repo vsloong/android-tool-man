@@ -60,8 +60,15 @@ class ApkSignerUseCase(
         keyAlias: String,
         keyPass: String,
         outputApkFile: Path
-    ) {
-        run(cmd = "${cmdName()} sign --verbose --ks $keystoreFile --ks-pass pass:$keystorePass --ks-key-alias $keyAlias --key-pass pass:$keyPass --out $outputApkFile $apkFile")
+    ): Boolean {
+        var output = ""
+        run(
+            cmd = "${cmdName()} sign --verbose --ks $keystoreFile --ks-pass pass:$keystorePass --ks-key-alias $keyAlias --key-pass pass:$keyPass --out $outputApkFile $apkFile",
+            onLine = {
+                output = it
+            })
+
+        return "Signed" == output
     }
 
     override fun cmdName(): String {

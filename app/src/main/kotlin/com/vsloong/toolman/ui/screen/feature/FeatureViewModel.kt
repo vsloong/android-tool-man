@@ -26,7 +26,7 @@ class FeatureViewModel(
                             val deviceFile = WorkspaceManager.phoneCachePath.resolve(fileName)
                             adbUseCase.screenCap(deviceId = deviceId, deviceFile = deviceFile.toString())
 
-                            val localFile = WorkspaceManager.localCachePath.resolve(fileName)
+                            val localFile = WorkspaceManager.getLocalCacheDirPath().resolve(fileName)
                             adbUseCase.pull(
                                 deviceId = deviceId,
                                 remotePath = deviceFile.toString(),

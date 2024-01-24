@@ -21,7 +21,30 @@ object WorkspaceManager {
     // 本地工作区地址（电脑端的地址）
     private val localWorkspacePath: Path =
         FileSystemView.getFileSystemView().defaultDirectory.resolve(toolsName).toPath()
-    val localCachePath: Path = localWorkspacePath.resolve("cache")
+
+    /**
+     * 本地缓存目录
+     */
+    fun getLocalCacheDirPath(): Path {
+        val path = localWorkspacePath.resolve("cache")
+        if (!Files.exists(path)) {
+            Files.createDirectories(path)
+        }
+
+        return path
+    }
+
+    /**
+     * 本地缓存目录
+     */
+    fun getLocalServerDirPath(): Path {
+        val path = localWorkspacePath.resolve("server")
+        if (!Files.exists(path)) {
+            Files.createDirectories(path)
+        }
+
+        return path
+    }
 
     /**
      * 本地存储的签名文件信息的文件夹

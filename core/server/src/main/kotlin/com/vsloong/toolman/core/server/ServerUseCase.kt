@@ -15,6 +15,10 @@ import java.nio.file.Path
 
 class ServerUseCase {
 
+    fun start(serverConfig: ServerConfig) {
+        start(port = serverConfig.port, localDirPath = serverConfig.localServerDirPath)
+    }
+
     fun start(port: Int, localDirPath: Path) {
 
         val bossGroup = NioEventLoopGroup()

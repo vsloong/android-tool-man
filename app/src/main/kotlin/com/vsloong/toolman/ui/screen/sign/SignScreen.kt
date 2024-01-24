@@ -1,19 +1,22 @@
 package com.vsloong.toolman.ui.screen.sign
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,11 +24,14 @@ import com.vsloong.toolman.base.BaseScreen
 import com.vsloong.toolman.base.rememberViewModel
 import com.vsloong.toolman.core.common.model.KeystoreModel
 import com.vsloong.toolman.core.common.model.SignInfo
+import com.vsloong.toolman.ui.dialog.KeystoreConfigDialog
+import com.vsloong.toolman.ui.dialog.QrCodeDialog
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppProgressBar
-import com.vsloong.toolman.ui.widget.AppTextFiled
 import com.vsloong.toolman.ui.widget.DragAndDropBox
 import com.vsloong.toolman.ui.widget.ext.dashBorder
+import java.nio.file.Path
+import kotlin.io.path.Path
 
 class SignScreen : BaseScreen {
 
@@ -33,11 +39,60 @@ class SignScreen : BaseScreen {
     override fun Content() {
         val viewModel = rememberViewModel { SignViewModel() }
 
+        val showKeystoreConfigDialog = remember {
+            mutableStateOf(false)
+        }
+
+
+        // 签名信息配置弹窗
+        KeystoreConfigDialog(
+            visible = showKeystoreConfigDialog.value,
+            onSaveClick = viewModel.signEvent.onSaveKeystoreInfo,
+            onCancelClick = {
+                showKeystoreConfigDialog.value = false
+            }
+        )
+
+        // 二维码弹窗
+        QrCodeDialog(
+            qrCodePath = viewModel.qrCodeImagePath.value,
+            visible = viewModel.showQrCodeDialog.value,
+            onDismissClick = {
+                viewModel.showQrCodeDialog.value = false
+            }
+        )
+
+
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+            Text(text = "签名信息列表", fontSize = 20.sp, color = Color.Black)
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                itemsIndexed(viewModel.keystoreListInfo) { index, model ->
+                    if (index == 0) {
+                        KeystoreInfoItem(
+                            onClick = {
+                                showKeystoreConfigDialog.value = true
+                            }
+                        )
+                    } else {
+                        KeystoreInfoItem(
+                            keystoreModel = model,
+                            isSelect = model == viewModel.selectKeystoreModel.value,
+                            onSelectKeystoreModel = {
+                                viewModel.signEvent.onSelectKeystoreModel.invoke(model)
+                            }
+                        )
+                    }
+
+                }
+            }
+
+            Text(text = "应用签名", fontSize = 20.sp, color = Color.Black)
 
             DragAndDropBox(
                 modifier = Modifier.fillMaxWidth()
-                    .heightIn(min = 160.dp)
+                    .heightIn(min = 120.dp)
                     .dashBorder(color = Color.Black),
                 onDrop = {
                     viewModel.signEvent.onApkFileSelect.invoke(it.first())
@@ -65,21 +120,6 @@ class SignScreen : BaseScreen {
                     )
                 }
 
-                is SignState.NeedSign -> {
-                    ExecuteSignContent(
-                        signEvent = viewModel.signEvent,
-                        keystoreFile = viewModel.keystoreFile.value.toString(),
-                        keystorePass = viewModel.keystorePass,
-                        keyAlias = viewModel.keyAlias,
-                        keyPass = viewModel.keyPass,
-                        keystoreInfo = viewModel.keystoreInfo,
-                        selectKeystoreModel = viewModel.selectKeystoreModel.value,
-                        onSelectKeystoreModel = {
-                            viewModel.signEvent.onSelectKeystoreModel.invoke(it)
-                        }
-                    )
-                }
-
                 is SignState.Checking -> {
                     Text(text = "正在检测签名")
                     AppProgressBar(
@@ -90,9 +130,37 @@ class SignScreen : BaseScreen {
                     )
                 }
             }
+
+            OutputSignedApkInfo(
+                apkPath = viewModel.outputSignedApkPath.value,
+                onShowQrCodeClick = {
+                    viewModel.signEvent.onShowQrCode.invoke(viewModel.outputSignedApkPath.value)
+                }
+            )
+
         }
     }
 
+    @Composable
+    private fun OutputSignedApkInfo(
+        apkPath: Path,
+        onShowQrCodeClick: () -> Unit
+    ) {
+        if (apkPath.toString().isNotBlank()) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "输出APK地址：$apkPath")
+
+                AppButton(
+                    modifier = Modifier.width(400.dp),
+                    text = "扫码下载安装",
+                    onClick = {
+                        onShowQrCodeClick.invoke()
+                    })
+            }
+        }
+    }
 
     /**
      * 签名信息
@@ -110,8 +178,8 @@ class SignScreen : BaseScreen {
             SelectionContainer {
                 Text(
                     text = "md5=${signInfo.md5}\n" +
-                            "sha1=${signInfo.sha1}\n" +
-                            "sha256=${signInfo.sha256}"
+                        "sha1=${signInfo.sha1}\n" +
+                        "sha256=${signInfo.sha256}"
                 )
             }
 
@@ -145,88 +213,31 @@ class SignScreen : BaseScreen {
         }
     }
 
-    /**
-     * 处理签名区域
-     */
+
     @Composable
-    private fun ExecuteSignContent(
-        keystoreInfo: List<KeystoreModel>,
-        selectKeystoreModel: KeystoreModel,
-        onSelectKeystoreModel: (KeystoreModel) -> Unit,
-        signEvent: SignEvent,
-        keystoreFile: String,
-        keystorePass: MutableState<String>,
-        keyAlias: MutableState<String>,
-        keyPass: MutableState<String>,
+    private fun KeystoreInfoItem(
+        onClick: () -> Unit
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(keystoreInfo) {
-                    KeystoreInfoItem(
-                        keystoreModel = it,
-                        isSelect = it == selectKeystoreModel,
-                        onSelectKeystoreModel = {
-                            onSelectKeystoreModel.invoke(it)
-                        }
-                    )
-                }
-            }
-
-            DragAndDropBox(
-                modifier = Modifier.fillMaxWidth()
-                    .height(100.dp)
-                    .dashBorder(color = Color.Black),
-                onDrop = {
-                    signEvent.onKeyStoreFileSelect.invoke(it.first())
+        Column(
+            modifier = Modifier.width(200.dp)
+                .height(100.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    Color(0xFFF3F1F1)
+                )
+                .clickable {
+                    onClick.invoke()
                 },
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    Text(text = "拖拽签名文件到此")
-                    Text(text = keystoreFile)
-                }
-            }
-
-            AppTextFiled(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(46.dp),
-                text = keystorePass.value,
-                hint = "请输入keystorePass",
-                onValueChange = {
-                    keystorePass.value = it
-                }
+            verticalArrangement = Arrangement.spacedBy(space = 8.dp, alignment = Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource("ic_add.svg"),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
             )
 
-            AppTextFiled(
-                modifier = Modifier.fillMaxWidth()
-                    .height(46.dp),
-                text = keyAlias.value,
-                hint = "请输入keyAlias",
-                onValueChange = {
-                    keyAlias.value = it
-                }
-            )
-
-            AppTextFiled(
-                modifier = Modifier.fillMaxWidth()
-                    .height(46.dp),
-                text = keyPass.value,
-                hint = "请输入keyPass",
-                onValueChange = {
-                    keyPass.value = it
-                }
-            )
-
-            AppButton(
-                modifier = Modifier.fillMaxWidth()
-                    .height(46.dp),
-                text = "签名",
-                onClick = {
-                    signEvent.onSignClick()
-                }
-            )
+            Text(text = "添加签名数据")
         }
     }
 
@@ -238,6 +249,8 @@ class SignScreen : BaseScreen {
     ) {
         Column(
             modifier = Modifier
+                .width(200.dp)
+                .height(100.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(
                     color = if (isSelect) {
@@ -249,11 +262,12 @@ class SignScreen : BaseScreen {
                 .clickable {
                     onSelectKeystoreModel.invoke()
                 }
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(space = 8.dp, alignment = Alignment.CenterVertically)
         ) {
             Text(
                 text = keystoreModel.keyAlias,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isSelect) {
                     Color.White

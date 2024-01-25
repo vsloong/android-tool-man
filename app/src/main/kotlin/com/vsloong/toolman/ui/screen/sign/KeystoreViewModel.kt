@@ -13,6 +13,7 @@ import com.vsloong.toolman.core.common.usecase.KeyToolUseCase
 import com.vsloong.toolman.core.common.utils.getFileMD5
 import com.vsloong.toolman.core.common.utils.logger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.nio.file.Path
@@ -23,6 +24,8 @@ import kotlin.math.log
 class KeystoreViewModel(
     private val keyToolUseCase: KeyToolUseCase = KeyToolUseCase()
 ) : BaseViewModel() {
+
+    val toastEvent = MutableSharedFlow<String>()
 
     /**
      * 是否展示配置弹窗
@@ -73,7 +76,7 @@ class KeystoreViewModel(
         }
     }
 
-    private fun checkKeystore(
+    private suspend fun checkKeystore(
         keystoreFilePath: Path,
         keystorePass: String,
         keyAlias: String,
@@ -101,6 +104,8 @@ class KeystoreViewModel(
             showKeystoreConfigDialog.value = false
 
         } else {
+            toastEvent.tryEmit(result.keystoreError.errorMessage)
+            toastEvent.emit(result.keystoreError.errorMessage)
             println(result.keystoreError.errorMessage)
         }
     }

@@ -3,15 +3,23 @@ package com.vsloong.toolman.ui.screen.sign
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,15 +38,30 @@ import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppProgressBar
 import com.vsloong.toolman.ui.widget.DragAndDropBox
 import com.vsloong.toolman.ui.widget.ext.dashBorder
+import kotlinx.coroutines.launch
 import java.nio.file.Path
 
 class SignScreen : BaseScreen {
 
     @Composable
     override fun Content() {
+
         val signViewModel = rememberViewModel { SignViewModel() }
         val keystoreViewModel = rememberViewModel { KeystoreViewModel() }
 
+
+        val hostState = remember {
+            SnackbarHostState()
+        }
+
+
+        LaunchedEffect(
+            key1 = "Toast"
+        ) {
+            keystoreViewModel.toastEvent.collect() {
+                hostState.showSnackbar(message = it)
+            }
+        }
 
         // 签名信息配置弹窗
         KeystoreConfigDialog(
@@ -59,84 +82,109 @@ class SignScreen : BaseScreen {
         )
 
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
 
-            Text(text = "签名信息列表", fontSize = 20.sp, color = Color.Black)
 
-            LazyRow(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                itemsIndexed(keystoreViewModel.keystoreListInfo) { index, model ->
-                    if (index == 0) {
-                        KeystoreInfoItem(
-                            onClick = {
-                                keystoreViewModel.showKeystoreConfigDialog.value = true
-                            }
-                        )
-                    } else {
-                        KeystoreInfoItem(
-                            keystoreModel = model,
-                            isSelect = model == signViewModel.selectKeystoreModel.value,
-                            onSelectKeystoreModel = {
-                                signViewModel.signEvent.onSelectKeystoreModel.invoke(model)
-                            }
+
+                Text(
+                    text = "签名信息（${keystoreViewModel.keystoreListInfo.size - 1}）",
+                    fontSize = 20.sp,
+                    color = Color.Black
+                )
+
+                val scrollState = rememberLazyListState()
+                val coroutineScope = rememberCoroutineScope()
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth()
+                        .draggable(
+                            orientation = Orientation.Horizontal,
+                            state = rememberDraggableState { delta ->
+                                coroutineScope.launch {
+                                    scrollState.scrollBy(-delta)
+                                }
+                            },
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    state = scrollState
+                ) {
+                    itemsIndexed(keystoreViewModel.keystoreListInfo) { index, model ->
+                        if (index == 0) {
+                            KeystoreInfoItem(
+                                onClick = {
+                                    keystoreViewModel.showKeystoreConfigDialog.value = true
+                                }
+                            )
+                        } else {
+                            KeystoreInfoItem(
+                                keystoreModel = model,
+                                isSelect = model == signViewModel.selectKeystoreModel.value,
+                                onSelectKeystoreModel = {
+                                    signViewModel.signEvent.onSelectKeystoreModel.invoke(model)
+                                }
+                            )
+                        }
+
+                    }
+                }
+
+                Text(text = "应用签名", fontSize = 20.sp, color = Color.Black)
+
+                DragAndDropBox(
+                    modifier = Modifier.fillMaxWidth()
+                        .heightIn(min = 120.dp)
+                        .dashBorder(color = Color.Black),
+                    onDrop = {
+                        signViewModel.signEvent.onApkFileSelect.invoke(it.first())
+                    },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        Text(text = "拖拽APK文件到此")
+                        Text(text = signViewModel.apkFile.value.toString())
+                    }
+                }
+
+                // 如果有签名，显示签名信息，否则展示签名功能区域
+                when (signViewModel.signState.value) {
+                    is SignState.Signed -> {
+                        SignInfoContent(
+                            signInfo = signViewModel.signInfo.value,
+                            onResignClick = signViewModel.signEvent.onResignClick
                         )
                     }
 
+                    is SignState.UnSign -> {
+                        UnsignInfoContent(
+                            onResignClick = signViewModel.signEvent.onResignClick
+                        )
+                    }
+
+                    is SignState.Checking -> {
+                        Text(text = "正在检测签名")
+                        AppProgressBar(
+                            modifier = Modifier.fillMaxWidth()
+                                .height(4.dp),
+                            color = Color.Black,
+                            backgroundColor = Color(0xFFF3F1F1)
+                        )
+                    }
                 }
+
+                OutputSignedApkInfo(
+                    apkPath = signViewModel.outputSignedApkPath.value,
+                    onShowQrCodeClick = {
+                        signViewModel.signEvent.onShowQrCode.invoke(signViewModel.outputSignedApkPath.value)
+                    }
+                )
             }
 
-            Text(text = "应用签名", fontSize = 20.sp, color = Color.Black)
-
-            DragAndDropBox(
-                modifier = Modifier.fillMaxWidth()
-                    .heightIn(min = 120.dp)
-                    .dashBorder(color = Color.Black),
-                onDrop = {
-                    signViewModel.signEvent.onApkFileSelect.invoke(it.first())
-                },
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    Text(text = "拖拽APK文件到此")
-                    Text(text = signViewModel.apkFile.value.toString())
-                }
-            }
-
-            // 如果有签名，显示签名信息，否则展示签名功能区域
-            when (signViewModel.signState.value) {
-                is SignState.Signed -> {
-                    SignInfoContent(
-                        signInfo = signViewModel.signInfo.value,
-                        onResignClick = signViewModel.signEvent.onResignClick
-                    )
-                }
-
-                is SignState.UnSign -> {
-                    UnsignInfoContent(
-                        onResignClick = signViewModel.signEvent.onResignClick
-                    )
-                }
-
-                is SignState.Checking -> {
-                    Text(text = "正在检测签名")
-                    AppProgressBar(
-                        modifier = Modifier.fillMaxWidth()
-                            .height(4.dp),
-                        color = Color.Black,
-                        backgroundColor = Color(0xFFF3F1F1)
-                    )
-                }
-            }
-
-            OutputSignedApkInfo(
-                apkPath = signViewModel.outputSignedApkPath.value,
-                onShowQrCodeClick = {
-                    signViewModel.signEvent.onShowQrCode.invoke(signViewModel.outputSignedApkPath.value)
-                }
-            )
-
+            // Toast
+            SnackbarHost(hostState = hostState, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 

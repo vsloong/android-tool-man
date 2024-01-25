@@ -31,34 +31,30 @@ import com.vsloong.toolman.ui.widget.AppProgressBar
 import com.vsloong.toolman.ui.widget.DragAndDropBox
 import com.vsloong.toolman.ui.widget.ext.dashBorder
 import java.nio.file.Path
-import kotlin.io.path.Path
 
 class SignScreen : BaseScreen {
 
     @Composable
     override fun Content() {
-        val viewModel = rememberViewModel { SignViewModel() }
-
-        val showKeystoreConfigDialog = remember {
-            mutableStateOf(false)
-        }
+        val signViewModel = rememberViewModel { SignViewModel() }
+        val keystoreViewModel = rememberViewModel { KeystoreViewModel() }
 
 
         // 签名信息配置弹窗
         KeystoreConfigDialog(
-            visible = showKeystoreConfigDialog.value,
-            onSaveClick = viewModel.signEvent.onSaveKeystoreInfo,
+            visible = keystoreViewModel.showKeystoreConfigDialog.value,
+            onSaveClick = keystoreViewModel.keystoreEvent.onSaveKeystoreInfo,
             onCancelClick = {
-                showKeystoreConfigDialog.value = false
+                keystoreViewModel.showKeystoreConfigDialog.value = false
             }
         )
 
         // 二维码弹窗
         QrCodeDialog(
-            qrCodePath = viewModel.qrCodeImagePath.value,
-            visible = viewModel.showQrCodeDialog.value,
+            qrCodePath = signViewModel.qrCodeImagePath.value,
+            visible = signViewModel.showQrCodeDialog.value,
             onDismissClick = {
-                viewModel.showQrCodeDialog.value = false
+                signViewModel.showQrCodeDialog.value = false
             }
         )
 
@@ -67,20 +63,23 @@ class SignScreen : BaseScreen {
 
             Text(text = "签名信息列表", fontSize = 20.sp, color = Color.Black)
 
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                itemsIndexed(viewModel.keystoreListInfo) { index, model ->
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                itemsIndexed(keystoreViewModel.keystoreListInfo) { index, model ->
                     if (index == 0) {
                         KeystoreInfoItem(
                             onClick = {
-                                showKeystoreConfigDialog.value = true
+                                keystoreViewModel.showKeystoreConfigDialog.value = true
                             }
                         )
                     } else {
                         KeystoreInfoItem(
                             keystoreModel = model,
-                            isSelect = model == viewModel.selectKeystoreModel.value,
+                            isSelect = model == signViewModel.selectKeystoreModel.value,
                             onSelectKeystoreModel = {
-                                viewModel.signEvent.onSelectKeystoreModel.invoke(model)
+                                signViewModel.signEvent.onSelectKeystoreModel.invoke(model)
                             }
                         )
                     }
@@ -95,28 +94,28 @@ class SignScreen : BaseScreen {
                     .heightIn(min = 120.dp)
                     .dashBorder(color = Color.Black),
                 onDrop = {
-                    viewModel.signEvent.onApkFileSelect.invoke(it.first())
+                    signViewModel.signEvent.onApkFileSelect.invoke(it.first())
                 },
                 contentAlignment = Alignment.Center
             ) {
                 Column {
                     Text(text = "拖拽APK文件到此")
-                    Text(text = viewModel.apkFile.value.toString())
+                    Text(text = signViewModel.apkFile.value.toString())
                 }
             }
 
             // 如果有签名，显示签名信息，否则展示签名功能区域
-            when (viewModel.signState.value) {
+            when (signViewModel.signState.value) {
                 is SignState.Signed -> {
                     SignInfoContent(
-                        signInfo = viewModel.signInfo.value,
-                        onResignClick = viewModel.signEvent.onResignClick
+                        signInfo = signViewModel.signInfo.value,
+                        onResignClick = signViewModel.signEvent.onResignClick
                     )
                 }
 
                 is SignState.UnSign -> {
                     UnsignInfoContent(
-                        onResignClick = viewModel.signEvent.onResignClick
+                        onResignClick = signViewModel.signEvent.onResignClick
                     )
                 }
 
@@ -132,9 +131,9 @@ class SignScreen : BaseScreen {
             }
 
             OutputSignedApkInfo(
-                apkPath = viewModel.outputSignedApkPath.value,
+                apkPath = signViewModel.outputSignedApkPath.value,
                 onShowQrCodeClick = {
-                    viewModel.signEvent.onShowQrCode.invoke(viewModel.outputSignedApkPath.value)
+                    signViewModel.signEvent.onShowQrCode.invoke(signViewModel.outputSignedApkPath.value)
                 }
             )
 

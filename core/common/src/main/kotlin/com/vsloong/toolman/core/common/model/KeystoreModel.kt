@@ -15,16 +15,21 @@ class KeystoreModel(
     val keyAlias: String = "",
     val keyPass: String = "",
 
-    // 签名文件md5
+    // 这个文件的md5值，并不是签名的md5
     val keystoreFileMd5: String = "",
+
+    // 签名的sha1、sha256值，暂时无法获取md5值
+    val sha1: String = "",
+    val sha256: String = "",
 ) {
 
+    @JsonIgnore
     fun hasData(): Boolean {
         return keystoreFileName.isNotEmpty()
-                && keystoreFileMd5.isNotEmpty()
-                && keystorePass.isNotEmpty()
-                && keyAlias.isNotEmpty()
-                && keyPass.isNotEmpty()
+            && keystoreFileMd5.isNotEmpty()
+            && keystorePass.isNotEmpty()
+            && keyAlias.isNotEmpty()
+            && keyPass.isNotEmpty()
     }
 
     @JsonIgnore

@@ -8,6 +8,5 @@ data class SignEvent(
     val onSignClick: () -> Unit,
     val onResignClick: () -> Unit,
     val onSelectKeystoreModel: (KeystoreModel) -> Unit,
-    val onSaveKeystoreInfo: (Path, String, String, String) -> Unit,
     val onShowQrCode: (Path) -> Unit,
 )

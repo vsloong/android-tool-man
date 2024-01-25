@@ -89,6 +89,20 @@ class AdbUseCase(
     }
 
     /**
+     * 清除数据
+     */
+    fun clearData(deviceId: String, packageName: String) {
+        run(cmd = "${cmdName()} -s $deviceId shell pm clear $packageName")
+    }
+
+    /**
+     * 卸载应用
+     */
+    fun uninstall(deviceId: String, packageName: String) {
+        run(cmd = "${cmdName()} -s $deviceId shell pm uninstall $packageName")
+    }
+
+    /**
      * 获取当前Activity
      */
     fun currentFocusActivity(deviceId: String) {

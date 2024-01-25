@@ -55,6 +55,9 @@ val homeViewModel = HomeViewModel()
 /**
  * 请参考
  * https://github.com/JetBrains/compose-multiplatform
+ *
+ * Tutorials
+ * https://github.com/JetBrains/compose-multiplatform/blob/master/tutorials/README.md
  */
 fun main() = application {
     Window(

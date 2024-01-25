@@ -32,8 +32,8 @@ class FeatureScreen : BaseScreen {
                 Image(
                     bitmap = loadImageBitmap(File(featureViewModel.screenCap.value).inputStream()),
                     contentDescription = null,
-                    modifier = Modifier.width(90.dp)
-                        .height(180.dp)
+                    modifier = Modifier.width(270.dp)
+                        .height(540.dp)
                 )
             }
         }

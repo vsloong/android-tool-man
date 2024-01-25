@@ -1,7 +1,6 @@
 package com.vsloong.toolman.ui.screen.apps
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -39,32 +38,49 @@ class AppsScreen : BaseScreen {
                 }
             )
 
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(viewModel.packages) {
-                    AppItem(packageName = it)
+                    AppItem(
+                        packageName = it,
+                        appOperateEvent = viewModel.appOperateEvent
+                    )
                 }
             }
+
         }
     }
 
     @Composable
-    private fun AppItem(packageName: String) {
-        Box(
-            modifier = Modifier
-                .heightIn(min = 40.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(color = Color(0xFFFFF6DF))
-                .clickable {
-
-                }
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart
+    private fun AppItem(
+        packageName: String,
+        appOperateEvent: AppOperateEvent
+    ) {
+        ContextMenuArea(
+            items = {
+                listOf(
+                    ContextMenuItem("清除数据") { appOperateEvent.onClearData.invoke(packageName) },
+                    ContextMenuItem("卸载") { appOperateEvent.onUnInstall.invoke(packageName) }
+                )
+            }
         ) {
-            Text(text = packageName)
+            Box(
+                modifier = Modifier
+                    .heightIn(min = 40.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(color = Color(0xFFFFF6DF))
+                    .clickable {
+
+                    }
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(text = packageName)
+            }
         }
     }
 
@@ -73,12 +89,10 @@ class AppsScreen : BaseScreen {
         onExecuteClick: (String) -> Unit = {}
     ) {
 
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(color = Color(0xFFF3F1F1))
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .clip(RoundedCornerShape(20.dp)),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
             val cmd = remember { mutableStateOf("") }
@@ -88,24 +102,19 @@ class AppsScreen : BaseScreen {
                 onValueChange = {
                     cmd.value = it
                 },
-                modifier = Modifier.fillMaxWidth().height(40.dp)
+                modifier = Modifier.fillMaxWidth()
+                    .weight(1f)
+                    .height(40.dp)
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Spacer(modifier = Modifier.fillMaxWidth().weight(1f))
-
-                AppButton(
-                    modifier = Modifier.height(40.dp),
-                    text = "搜索",
-                    onClick = {
-                        onExecuteClick.invoke(cmd.value)
-                        cmd.value = ""
-                    }
-                )
-            }
+            AppButton(
+                modifier = Modifier.height(40.dp),
+                text = "搜索",
+                onClick = {
+                    onExecuteClick.invoke(cmd.value)
+                    cmd.value = ""
+                }
+            )
         }
     }
 }

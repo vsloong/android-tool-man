@@ -97,7 +97,6 @@ class FeedsScreen : BaseScreen {
         Column(
             modifier = Modifier.fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(color = Color(0xFFF3F1F1))
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {

@@ -28,6 +28,20 @@ class AppsViewModel(
         }
     )
 
+    val appOperateEvent = AppOperateEvent(
+        onClearData = {
+            viewModelScope.launch(Dispatchers.IO) {
+                adbUseCase.clearData(deviceId = deviceManager.currentDeviceId(), packageName = it)
+            }
+        },
+        onUnInstall = {
+            viewModelScope.launch(Dispatchers.IO) {
+                adbUseCase.uninstall(deviceId = deviceManager.currentDeviceId(), packageName = it)
+                queryApps()
+            }
+        }
+    )
+
     private fun queryApps() {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {

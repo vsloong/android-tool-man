@@ -17,4 +17,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-core:2.16.0")
     api("com.fasterxml.jackson.core:jackson-databind:2.16.0")
     api("com.fasterxml.jackson.core:jackson-annotations:2.16.0")
+
+    // ddmlib
+    api("com.android.tools.ddms:ddmlib:31.2.2")
 }

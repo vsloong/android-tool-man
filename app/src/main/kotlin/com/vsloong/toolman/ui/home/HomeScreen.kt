@@ -22,8 +22,6 @@ class HomeScreen : BaseScreen {
     override fun Content() {
         val homeViewModel = rememberViewModel { HomeViewModel() }
 
-        val homeEvent = homeViewModel.homeEvent
-
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             DragAndDropBox(
                 modifier = Modifier.width(400.dp)
@@ -33,17 +31,6 @@ class HomeScreen : BaseScreen {
                 },
             ) {
 
-            }
-
-            homeViewModel.devices.forEach {
-                Text(
-                    text = it.model,
-                    fontSize = 16.sp,
-                    color = R.colors.text_primary,
-                    modifier = Modifier.clickable {
-                        homeEvent.onDeviceSelect.invoke(it)
-                    }
-                )
             }
 
 

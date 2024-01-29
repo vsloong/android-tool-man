@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.vsloong.toolman.base.BaseViewModel
 import com.vsloong.toolman.core.common.model.AdbDeviceInfo
+import com.vsloong.toolman.core.common.model.DeviceWrapper
 import com.vsloong.toolman.core.common.usecase.AdbUseCase
 import com.vsloong.toolman.core.common.usecase.BundleUseCase
 import com.vsloong.toolman.core.common.utils.logger
@@ -20,29 +21,9 @@ import kotlin.io.path.extension
 class HomeViewModel(
     private val adbUseCase: AdbUseCase = AdbUseCase(assetsManager = AssetsManager),
     private val bundleUseCase: BundleUseCase = BundleUseCase(assetsManager = AssetsManager),
-    private val deviceManager: DeviceManager = DeviceManager
 ) : BaseViewModel() {
 
-    val devices = mutableStateListOf<AdbDeviceInfo>()
     val currentTab = mutableStateOf<TabType>(TabType.Feed)
-
-    init {
-        refreshDevices()
-    }
-
-
-    private val selectDevices = mutableSetOf<AdbDeviceInfo>()
-    val homeEvent = HomeEvent(
-        onDeviceSelect = {
-            selectDevices.add(it)
-        },
-        onDeviceRemove = {
-            selectDevices.remove(it)
-        },
-        onClearAllDevice = {
-            selectDevices.clear()
-        }
-    )
 
     val tabEvent = LeftTabEvent(
         onFeatureClick = {
@@ -62,13 +43,7 @@ class HomeViewModel(
         }
     )
 
-    fun refreshDevices() {
-        viewModelScope.launch(Dispatchers.IO) {
-            deviceManager.addDevices(adbUseCase.getDevices())
-        }
-    }
-
-    fun install(paths: List<Path>, devices: Set<AdbDeviceInfo>) {
+    fun install(paths: List<Path>, devices: Set<DeviceWrapper>) {
 
         if (paths.size > 1) {
             logger("不支持多选文件哦")
@@ -90,7 +65,7 @@ class HomeViewModel(
                         apkPath = path,
                         devices = devices
                             .map {
-                                it.deviceId
+                                it.serialNumber
                             }
                             .toSet()
                     )
@@ -106,7 +81,7 @@ class HomeViewModel(
                         apksPath = outputPath,
                         devices = devices
                             .map {
-                                it.deviceId
+                                it.serialNumber
                             }.toSet()
                     )
                 }

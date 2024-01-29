@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
-import com.vsloong.toolman.core.common.model.AdbDeviceInfo
+import com.vsloong.toolman.core.common.model.DeviceWrapper
 import com.vsloong.toolman.manager.DeviceManager
 import com.vsloong.toolman.ui.screen.feeds.FeedsScreen
 import com.vsloong.toolman.ui.home.HomeViewModel
@@ -119,13 +119,10 @@ fun main() = application {
                         // 右侧栏
                         Column(modifier = Modifier.fillMaxSize().weight(1f)) {
                             DeviceContent(
-                                devices = DeviceManager.devices,
+                                devices = DeviceManager.deviceList(),
+                                selectedDevice = DeviceManager.selectedDevice(),
                                 onFileDrop = { files, device ->
                                     homeViewModel.install(files, setOf(device))
-                                },
-
-                                onRefreshClick = {
-                                    homeViewModel.refreshDevices()
                                 })
                         }
                     }
@@ -141,16 +138,13 @@ fun main() = application {
 
 @Composable
 fun DeviceContent(
-    devices: List<AdbDeviceInfo>,
-    onFileDrop: (List<Path>, AdbDeviceInfo) -> Unit,
-    onRefreshClick: () -> Unit,
+    devices: List<DeviceWrapper>,
+    selectedDevice: DeviceWrapper?,
+    onFileDrop: (List<Path>, DeviceWrapper) -> Unit,
 ) {
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(text = "设备", fontSize = 24.sp, modifier = Modifier.wrapContentSize()
-            .clickable {
-                onRefreshClick.invoke()
-            })
+        Text(text = "设备", fontSize = 24.sp, modifier = Modifier.wrapContentSize())
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(count = 2),
@@ -160,6 +154,7 @@ fun DeviceContent(
             items(devices) {
                 DeviceItem(
                     device = it,
+                    isSelected = it == selectedDevice,
                     onFileDrop = onFileDrop
                 )
             }
@@ -169,8 +164,9 @@ fun DeviceContent(
 
 @Composable
 private fun DeviceItem(
-    device: AdbDeviceInfo,
-    onFileDrop: (List<Path>, AdbDeviceInfo) -> Unit
+    device: DeviceWrapper,
+    isSelected: Boolean,
+    onFileDrop: (List<Path>, DeviceWrapper) -> Unit
 ) {
     DragAndDropBox(
         modifier = Modifier.fillMaxWidth()
@@ -183,22 +179,38 @@ private fun DeviceItem(
         contentAlignment = Alignment.BottomCenter
     ) {
 
-        Box(
-            modifier = Modifier.fillMaxWidth()
-                .height(32.dp)
-                .padding(4.dp)
-                .clip(RoundedCornerShape(50))
-                .background(color = Color.White)
-                .padding(vertical = 4.dp),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(space = 8.dp, alignment = Alignment.Bottom),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
-                text = device.model,
-                fontSize = 10.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                text = isSelected.toString(),
+                fontSize = 16.sp
             )
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .height(32.dp)
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(color = Color.White)
+                    .padding(vertical = 4.dp, horizontal = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+
+                Text(
+                    text = device.name,
+                    fontSize = 10.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
+
+
     }
 }
 

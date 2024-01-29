@@ -64,7 +64,8 @@ class AppsScreen : BaseScreen {
             items = {
                 listOf(
                     ContextMenuItem("清除数据") { appOperateEvent.onClearData.invoke(packageName) },
-                    ContextMenuItem("卸载") { appOperateEvent.onUnInstall.invoke(packageName) }
+                    ContextMenuItem("卸载") { appOperateEvent.onUnInstall.invoke(packageName) },
+                    ContextMenuItem("提取APK") { appOperateEvent.onPullApk.invoke(packageName) },
                 )
             }
         ) {

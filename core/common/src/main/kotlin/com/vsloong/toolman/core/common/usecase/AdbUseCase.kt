@@ -29,12 +29,6 @@ class AdbUseCase(
         return assetsManager.getAdbPath().toString()
     }
 
-    init {
-        val path = WorkspaceManager.phoneCachePath
-        mkdir(path = path.parent.toString())
-        mkdir(path = path.toString())
-    }
-
     /**
      * 空白字符串
      */
@@ -238,13 +232,16 @@ class AdbUseCase(
      * 获取应用的安装包位置
      */
     fun apkPath(packageName: String): String {
+        val apkName = "base.apk"
         var apkPath = ""
         exec(
             cmd = "$adbPath shell pm path $packageName",
             onLine = {
-                apkPath = it
+                if (it.endsWith(apkName)) {
+                    apkPath = it
+                }
             })
-        return apkPath
+        return apkPath.replace("package:", "")
     }
 
     fun getDevice() {

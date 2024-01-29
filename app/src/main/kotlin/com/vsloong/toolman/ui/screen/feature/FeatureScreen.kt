@@ -28,6 +28,13 @@ class FeatureScreen : BaseScreen {
                     featureViewModel.featureEvent.onFeatureClick.invoke(ToolManFeature.ScreenCap)
                 })
 
+            AppButton(
+                text = "顶层Activity",
+                onClick = {
+                    featureViewModel.currentFocusActivity()
+                }
+            )
+
             if (featureViewModel.screenCap.value.isNotBlank()) {
                 Image(
                     bitmap = loadImageBitmap(File(featureViewModel.screenCap.value).inputStream()),

@@ -1,15 +1,12 @@
 package com.vsloong.toolman.ui.home
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.vsloong.toolman.base.BaseViewModel
-import com.vsloong.toolman.core.common.model.AdbDeviceInfo
 import com.vsloong.toolman.core.common.model.DeviceWrapper
 import com.vsloong.toolman.core.common.usecase.AdbUseCase
 import com.vsloong.toolman.core.common.usecase.BundleUseCase
 import com.vsloong.toolman.core.common.utils.logger
 import com.vsloong.toolman.manager.AssetsManager
-import com.vsloong.toolman.manager.DeviceManager
 import com.vsloong.toolman.ui.tab.LeftTabEvent
 import com.vsloong.toolman.ui.tab.TabType
 import kotlinx.coroutines.Dispatchers

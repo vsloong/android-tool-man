@@ -5,6 +5,7 @@ import com.vsloong.toolman.base.BaseViewModel
 import com.vsloong.toolman.base.viewModelIoScope
 import com.vsloong.toolman.core.common.manager.WorkspaceManager
 import com.vsloong.toolman.core.common.usecase.AdbUseCase
+import com.vsloong.toolman.core.common.usecase.ApkSignerUseCase
 import com.vsloong.toolman.core.common.utils.logger
 import com.vsloong.toolman.manager.AssetsManager
 import com.vsloong.toolman.manager.DeviceManager
@@ -44,25 +45,6 @@ class AppsViewModel(
                 queryApps()
             }
         },
-        onPullApk = {
-            viewModelScope.launch(Dispatchers.IO) {
-                val path = adbUseCase.apkPath(packageName = it)
-
-                if (path.isEmpty()) {
-                    logger("未检测到APK文件")
-                    return@launch
-                }
-
-                val localPath = WorkspaceManager.getLocalServerDirPath().resolve("${it}.apk")
-
-                val serialNumber = deviceManager.selectedDevice()?.serialNumber ?: return@launch
-                adbUseCase.pull(
-                    deviceId = serialNumber,
-                    remotePath = path,
-                    localPath = localPath.toString()
-                )
-            }
-        }
     )
 
     private fun queryApps() {
@@ -86,7 +68,7 @@ class AppsViewModel(
     private fun searchPackage(packageName: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            val result = packages.filter { it.startsWith(packageName) }
+            val result = packages.filter { it.contains(packageName) }
 
             packages.clear()
             packages.addAll(result)

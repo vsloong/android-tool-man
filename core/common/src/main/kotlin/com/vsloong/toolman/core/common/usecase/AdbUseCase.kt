@@ -1,9 +1,6 @@
 package com.vsloong.toolman.core.common.usecase
 
 import com.vsloong.toolman.core.common.manager.IAssetsPath
-import com.vsloong.toolman.core.common.manager.WorkspaceManager
-import com.vsloong.toolman.core.common.model.AdbDeviceInfo
-import com.vsloong.toolman.core.common.model.CmdOutput
 import com.vsloong.toolman.core.common.usecase.interfaces.ICmdUseCase
 import com.vsloong.toolman.core.common.utils.exec
 import com.vsloong.toolman.core.common.utils.logger
@@ -39,33 +36,6 @@ class AdbUseCase(
 
     fun version() {
         run(cmd = "${cmdName()} version")
-    }
-
-    /**
-     * 获取当前连接的设备信息
-     */
-    fun getDevices(): Set<AdbDeviceInfo> {
-        val devices = mutableSetOf<AdbDeviceInfo>()
-        exec(
-            adbPath.toString(), "devices", "-l",
-            onLines = {
-                if (it.size <= 1) {
-                    logger("没有设备连接")
-                } else {
-                    val list = it.subList(1, it.size)
-                    list.forEach { line ->
-                        val id = regexUseCase.getDeviceId(line)
-                        val model = regexUseCase.getDeviceModel(line)
-
-                        if (!id.isNullOrBlank() && !model.isNullOrBlank()) {
-                            devices.add(AdbDeviceInfo(deviceId = id, model = model))
-                        }
-                    }
-                }
-            }
-        )
-
-        return devices
     }
 
 
@@ -231,11 +201,11 @@ class AdbUseCase(
     /**
      * 获取应用的安装包位置
      */
-    fun apkPath(packageName: String): String {
+    fun apkPath(deviceId: String, packageName: String): String {
         val apkName = "base.apk"
         var apkPath = ""
         exec(
-            cmd = "$adbPath shell pm path $packageName",
+            cmd = "$adbPath -s $deviceId shell pm path $packageName",
             onLine = {
                 if (it.endsWith(apkName)) {
                     apkPath = it

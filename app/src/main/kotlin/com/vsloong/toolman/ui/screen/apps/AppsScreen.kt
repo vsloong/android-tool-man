@@ -15,8 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.vsloong.toolman.base.BaseScreen
 import com.vsloong.toolman.base.rememberViewModel
+import com.vsloong.toolman.ui.screen.appdetails.AppDetailsScreen
+import com.vsloong.toolman.ui.screen.appdetails.AppDetailsViewModel
+import com.vsloong.toolman.ui.screen.channel.ChannelScreen
 import com.vsloong.toolman.ui.themes.R
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppTextFiled
@@ -60,12 +64,16 @@ class AppsScreen : BaseScreen {
         packageName: String,
         appOperateEvent: AppOperateEvent
     ) {
+        val localNavigator = LocalNavigator.current
+
         ContextMenuArea(
             items = {
                 listOf(
                     ContextMenuItem("清除数据") { appOperateEvent.onClearData.invoke(packageName) },
-                    ContextMenuItem("卸载") { appOperateEvent.onUnInstall.invoke(packageName) },
-                    ContextMenuItem("提取APK") { appOperateEvent.onPullApk.invoke(packageName) },
+                    ContextMenuItem("卸载应用") { appOperateEvent.onUnInstall.invoke(packageName) },
+                    ContextMenuItem("更多") {
+                        localNavigator?.push(AppDetailsScreen(packageName = packageName))
+                    },
                 )
             }
         ) {

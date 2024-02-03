@@ -16,3 +16,12 @@ inline fun <reified T : ScreenModel> BaseScreen.rememberViewModel(
     return rememberScreenModel(tag, factory)
 }
 
+
+@Composable
+inline fun <reified T : ScreenModel> BaseTabScreen.rememberViewModel(
+    tag: String? = null,
+    crossinline factory: @DisallowComposableCalls () -> T
+): T {
+    return rememberScreenModel(tag, factory)
+}
+

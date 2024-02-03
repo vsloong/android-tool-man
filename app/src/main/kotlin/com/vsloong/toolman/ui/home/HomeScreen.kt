@@ -1,39 +1,127 @@
 package com.vsloong.toolman.ui.home
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalMapOf
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vsloong.toolman.base.BaseScreen
-import com.vsloong.toolman.base.rememberViewModel
-import com.vsloong.toolman.ui.themes.R
-import com.vsloong.toolman.ui.widget.DragAndDropBox
+import cafe.adriel.voyager.navigator.tab.CurrentTab
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import cafe.adriel.voyager.navigator.tab.TabNavigator
+import com.vsloong.toolman.base.BaseTabOptions
+import com.vsloong.toolman.base.BaseTabScreen
+import com.vsloong.toolman.ui.screen.channel.ChannelTabScreen
+import com.vsloong.toolman.ui.screen.device.DeviceTabScreen
+import com.vsloong.toolman.ui.screen.sign.SignTabScreen
 
-class HomeScreen : BaseScreen {
+@Composable
+fun HomeScreen() {
 
-    @Composable
-    override fun Content() {
-        val homeViewModel = rememberViewModel { HomeViewModel() }
+    TabNavigator(DeviceTabScreen) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .background(color = Color.White)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            DragAndDropBox(
-                modifier = Modifier.width(400.dp)
-                    .height(200.dp),
-                onDrop = {
-
-                },
+            Column(
+                modifier = Modifier.fillMaxHeight()
+                    .width(120.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
+                Text(text = "ATM", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+
+                HomeTabItemWrapper(tabScreen = DeviceTabScreen)
+                HomeTabItemWrapper(tabScreen = ChannelTabScreen)
+                HomeTabItemWrapper(tabScreen = SignTabScreen)
             }
 
-
+            Box(modifier = Modifier.fillMaxSize()) {
+                CurrentTab()
+            }
         }
+    }
+}
+
+@Composable
+private fun HomeTabItemWrapper(tabScreen: BaseTabScreen) {
+    val tabNavigator = LocalTabNavigator.current
+
+    HomeTabItem(
+        title = tabScreen.tabOptions.title,
+        icon = tabScreen.tabOptions.icon,
+        selected = tabNavigator.current == tabScreen,
+        onClick = {
+            tabNavigator.current = tabScreen
+        }
+    )
+
+}
+
+@Composable
+private fun HomeTabItem(
+    title: String,
+    icon: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+            .height(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                color = if (selected) {
+                    Color.Black
+                } else {
+                    Color.Transparent
+                }
+            )
+            .clickable {
+                onClick.invoke()
+            }
+            .padding(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        Image(
+            painter = painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            colorFilter = ColorFilter.tint(
+                color = if (selected) {
+                    Color.White
+                } else {
+                    Color.Black
+                }
+            )
+        )
+
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            color = if (selected) {
+                Color.White
+            } else {
+                Color.Black
+            }
+        )
+
     }
 }

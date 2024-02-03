@@ -19,13 +19,12 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.vsloong.toolman.base.BaseScreen
 import com.vsloong.toolman.base.rememberViewModel
 import com.vsloong.toolman.ui.screen.appdetails.AppDetailsScreen
-import com.vsloong.toolman.ui.screen.appdetails.AppDetailsViewModel
-import com.vsloong.toolman.ui.screen.channel.ChannelScreen
-import com.vsloong.toolman.ui.themes.R
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppTextFiled
 
 class AppsScreen : BaseScreen {
+
+
     @Composable
     override fun Content() {
 

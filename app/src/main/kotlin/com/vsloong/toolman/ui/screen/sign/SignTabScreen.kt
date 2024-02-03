@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vsloong.toolman.base.BaseScreen
+import com.vsloong.toolman.base.BaseTabOptions
+import com.vsloong.toolman.base.BaseTabScreen
 import com.vsloong.toolman.base.rememberViewModel
 import com.vsloong.toolman.core.common.model.KeystoreModel
 import com.vsloong.toolman.core.common.model.SignInfo
@@ -41,7 +43,12 @@ import com.vsloong.toolman.ui.widget.ext.dashBorder
 import kotlinx.coroutines.launch
 import java.nio.file.Path
 
-class SignScreen : BaseScreen {
+object SignTabScreen : BaseTabScreen() {
+
+    override val tabOptions: BaseTabOptions
+        get() = BaseTabOptions(
+            title = "签名",
+        )
 
     @Composable
     override fun Content() {

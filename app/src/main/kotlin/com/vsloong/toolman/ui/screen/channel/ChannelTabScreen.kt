@@ -14,13 +14,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.vsloong.toolman.base.BaseScreen
+import com.vsloong.toolman.base.BaseTabOptions
+import com.vsloong.toolman.base.BaseTabScreen
 import com.vsloong.toolman.base.rememberViewModel
 import com.vsloong.toolman.ui.widget.AppButton
 import com.vsloong.toolman.ui.widget.AppTextFiled
 import com.vsloong.toolman.ui.widget.DragAndDropBox
 import com.vsloong.toolman.ui.widget.ext.dashBorder
 
-class ChannelScreen : BaseScreen {
+object ChannelTabScreen : BaseTabScreen() {
+
+    override val tabOptions: BaseTabOptions
+        get() = BaseTabOptions(
+            title = "渠道",
+            icon = "tab_left_custom.svg"
+        )
 
     @Composable
     override fun Content() {
@@ -74,6 +82,7 @@ class ChannelScreen : BaseScreen {
             Text(text = "查询渠道信息：${viewModel.currentChannel.value}")
         }
     }
+
 
     @Composable
     private fun ToolItem(

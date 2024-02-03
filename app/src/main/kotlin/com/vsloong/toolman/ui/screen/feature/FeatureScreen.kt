@@ -7,12 +7,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
 import com.vsloong.toolman.base.BaseScreen
+import com.vsloong.toolman.base.BaseTabOptions
+import com.vsloong.toolman.base.BaseTabScreen
 import com.vsloong.toolman.base.rememberViewModel
 import com.vsloong.toolman.ui.widget.AppButton
 import java.io.File
 
 
-class FeatureScreen : BaseScreen {
+object FeatureScreen : BaseTabScreen() {
+
+    override val tabOptions: BaseTabOptions
+        get() = BaseTabOptions(
+            title = "功能",
+            icon = "tab_left_custom.svg"
+        )
 
     @Composable
     override fun Content() {

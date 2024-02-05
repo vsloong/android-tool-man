@@ -20,6 +20,10 @@ class UseCaseFactory(
         return getUseCase(cmd = CmdType.Adb.cmdName) as AdbUseCase
     }
 
+    fun getBundleUseCase(): BundleUseCase {
+        return getUseCase(cmd = CmdType.BundleTool.cmdName) as BundleUseCase
+    }
+
     private fun getUseCase(cmd: String): ICmdUseCase {
         val cmdName = cmd.split(whitespace).first()
 

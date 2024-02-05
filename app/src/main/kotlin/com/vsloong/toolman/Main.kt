@@ -37,7 +37,11 @@ fun main() = application {
         undecorated = true
     ) {
         MaterialTheme {
-            HomeScreen()
+            HomeScreen(
+                onExit = {
+                    exitApplication()
+                }
+            )
         }
     }
 }

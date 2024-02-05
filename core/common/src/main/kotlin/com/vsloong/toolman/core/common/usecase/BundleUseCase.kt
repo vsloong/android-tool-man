@@ -49,13 +49,13 @@ class BundleUseCase(
         run(cmd = cmd.toString().trim())
     }
 
+    fun installApks(apksPath: Path, deviceId: String) {
+        installApks(apksPath = apksPath, devices = setOf(deviceId))
+    }
+
     fun installApks(apksPath: Path, devices: Set<String> = emptySet()) {
-        if (devices.isEmpty()) {
-            run(cmd = "${cmdName()} install-apks --apks=$apksPath")
-        } else {
-            devices.forEach { device ->
-                run(cmd = "${cmdName()} install-apks --apks=$apksPath --device-id=$device")
-            }
+        devices.forEach { device ->
+            run(cmd = "${cmdName()} install-apks --apks=$apksPath --device-id=$device")
         }
     }
 

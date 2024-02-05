@@ -27,7 +27,7 @@ import com.vsloong.toolman.ui.screen.device.DeviceTabScreen
 import com.vsloong.toolman.ui.screen.sign.SignTabScreen
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onExit: () -> Unit) {
 
     TabNavigator(DeviceTabScreen) {
         Row(
@@ -50,6 +50,22 @@ fun HomeScreen() {
                 HomeTabItemWrapper(tabScreen = DeviceTabScreen)
                 HomeTabItemWrapper(tabScreen = ChannelTabScreen)
                 HomeTabItemWrapper(tabScreen = SignTabScreen)
+
+                Spacer(modifier = Modifier.fillMaxSize().weight(1f))
+
+                HomeTabIcon(
+                    resourcePath = "home_tab_setting.svg",
+                    onClick = {
+
+                    }
+                )
+
+                HomeTabIcon(
+                    resourcePath = "home_tab_exit.svg",
+                    onClick = {
+                        onExit.invoke()
+                    }
+                )
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -72,6 +88,21 @@ private fun HomeTabItemWrapper(tabScreen: BaseTabScreen) {
         }
     )
 
+}
+
+@Composable
+private fun HomeTabIcon(
+    resourcePath: String,
+    onClick: () -> Unit
+) {
+    Image(
+        painter = painterResource(resourcePath = resourcePath),
+        contentDescription = null,
+        modifier = Modifier.size(32.dp)
+            .padding(4.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick.invoke() }
+    )
 }
 
 @Composable

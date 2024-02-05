@@ -19,8 +19,11 @@ import com.vsloong.toolman.ui.screen.feature.ToolManFeature
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.awt.image.RenderedImage
+import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
+import kotlin.io.path.extension
+import kotlin.io.path.name
 
 class DeviceViewModel(
     private val cmdUseCaseFactory: UseCaseFactory = UseCaseFactory(
@@ -44,10 +47,6 @@ class DeviceViewModel(
      * 当前使用的设备
      */
     val currentDevice = mutableStateOf<DeviceWrapper?>(null)
-
-    fun selectedDevice(): DeviceWrapper? {
-        return currentDevice.value
-    }
 
     fun setSelectedDevice(device: DeviceWrapper) {
         currentDevice.value = device
@@ -84,8 +83,48 @@ class DeviceViewModel(
 
     val deviceEvent = DeviceEvent(
         onExecuteClick = { cmd ->
-            val result = cmdUseCaseFactory.run(cmd)
-            _cmdResultList.add(result)
+            viewModelScope.launch(Dispatchers.IO) {
+                val result = cmdUseCaseFactory.run(cmd)
+                _cmdResultList.add(result)
+            }
+        },
+        onInstall = { paths ->
+            currentDevice.value?.let { current ->
+                viewModelScope.launch(Dispatchers.IO) {
+                    paths
+                        .filter {
+                            it.name.endsWith(".apk") || it.endsWith(".aab")
+                        }
+                        .forEach { path ->
+                            when (val extension = path.extension) {
+                                // 安装APK
+                                "apk" -> {
+                                    cmdUseCaseFactory.getAdbUseCase().installApk(
+                                        apkPath = path,
+                                        deviceId = current.serialNumber
+                                    )
+
+                                }
+
+                                // 安装AAB
+                                "aab" -> {
+                                    val bundleUseCase = cmdUseCaseFactory.getBundleUseCase()
+                                    val outputPath = path.parent.resolve("sample.apks")
+                                    bundleUseCase.buildApks(aabPath = path, outputApksPath = outputPath)
+                                    bundleUseCase.installApks(
+                                        apksPath = outputPath,
+                                        deviceId = current.serialNumber
+                                    )
+                                }
+
+                                // 其他暂不支持
+                                else -> {
+
+                                }
+                            }
+                        }
+                }
+            }
         }
     )
 

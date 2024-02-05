@@ -42,6 +42,10 @@ class AdbUseCase(
     /**
      * 安装apk文件到设备
      */
+    fun installApk(apkPath: Path, deviceId: String) {
+        return installApk(apkPath = apkPath, devices = setOf(deviceId))
+    }
+
     fun installApk(apkPath: Path, devices: Set<String>) {
         if (devices.isEmpty()) {
             run(cmd = "${cmdName()} install $apkPath")

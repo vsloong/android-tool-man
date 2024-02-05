@@ -27,7 +27,7 @@ object ChannelTabScreen : BaseTabScreen() {
     override val tabOptions: BaseTabOptions
         get() = BaseTabOptions(
             title = "渠道",
-            icon = "tab_left_custom.svg"
+            icon = "home_tab_channel.svg"
         )
 
     @Composable

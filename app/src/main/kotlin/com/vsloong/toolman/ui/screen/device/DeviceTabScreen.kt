@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.ddmlib.IDevice
 import com.vsloong.toolman.base.BaseTabOptions
 import com.vsloong.toolman.base.BaseTabScreen
 import com.vsloong.toolman.base.rememberViewModel
@@ -33,6 +34,8 @@ import com.vsloong.toolman.ui.screen.feature.FeatureEvent
 import com.vsloong.toolman.ui.screen.feature.ToolManFeature
 import com.vsloong.toolman.ui.themes.R
 import com.vsloong.toolman.ui.widget.AppTextFiled1
+import com.vsloong.toolman.ui.widget.DragAndDropBox
+import com.vsloong.toolman.ui.widget.ext.dashBorder
 import java.io.File
 
 object DeviceTabScreen : BaseTabScreen() {
@@ -40,6 +43,7 @@ object DeviceTabScreen : BaseTabScreen() {
     override val tabOptions: BaseTabOptions
         get() = BaseTabOptions(
             title = "设备",
+            icon = "home_tab_phone.svg"
         )
 
     @Composable
@@ -99,7 +103,7 @@ object DeviceTabScreen : BaseTabScreen() {
 
             // 设备操作相关内容
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().weight(1f),
             ) {
 
                 LaunchedEffect(deviceViewModel.cmdResultList.size) {
@@ -130,6 +134,35 @@ object DeviceTabScreen : BaseTabScreen() {
                 SendMessageContent(
                     onSend = deviceViewModel.deviceEvent.onExecuteClick,
                 )
+            }
+
+
+            // 设备详情
+            Column(
+                modifier = Modifier.width(200.dp).padding(end = 12.dp, top = 12.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+
+                DragAndDropBox(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .dashBorder(color = Color.Black),
+                    onDrop = {
+                        deviceViewModel.deviceEvent.onInstall.invoke(it)
+                    },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "拖拽APK、AAB文件到此安装", modifier = Modifier.padding(12.dp))
+                }
+
+                deviceViewModel.currentDevice.value?.let { device ->
+                    Text(text = "系统版本 = Android ${device.getProperty(IDevice.PROP_BUILD_VERSION)}")
+                    Text(text = "系统API版本 = ${device.getProperty(IDevice.PROP_BUILD_API_LEVEL)}")
+                    Text(text = "屏幕密度 = ${device.density}")
+                    Text(text = "电量 = ${device.battery.get()}")
+                    Text(text = "CPU架构 = ${device.abis.joinToString(separator = ",")}")
+                }
             }
         }
     }

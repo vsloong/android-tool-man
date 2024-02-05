@@ -48,6 +48,7 @@ object SignTabScreen : BaseTabScreen() {
     override val tabOptions: BaseTabOptions
         get() = BaseTabOptions(
             title = "签名",
+            icon = "home_tab_sign.svg"
         )
 
     @Composable

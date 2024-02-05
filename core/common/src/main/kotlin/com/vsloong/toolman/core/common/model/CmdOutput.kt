@@ -3,5 +3,6 @@ package com.vsloong.toolman.core.common.model
 
 data class CmdOutput(
     val cmd: String,
-    val output: String
+    val output: String,
+    val type: CmdOutputType = CmdOutputType.Text,
 )

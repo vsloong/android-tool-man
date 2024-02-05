@@ -36,7 +36,8 @@ object ChannelTabScreen : BaseTabScreen() {
         val viewModel = rememberViewModel { ChannelViewModel() }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize().padding(12.dp)
         ) {
 
 

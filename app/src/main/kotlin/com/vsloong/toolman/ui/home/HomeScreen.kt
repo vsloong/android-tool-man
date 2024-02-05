@@ -34,15 +34,15 @@ fun HomeScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(16.dp))
-                .background(color = Color.White)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .background(color = Color.White),
         ) {
 
             Column(
                 modifier = Modifier.fillMaxHeight()
-                    .width(120.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .width(160.dp)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(text = "ATM", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.Black)

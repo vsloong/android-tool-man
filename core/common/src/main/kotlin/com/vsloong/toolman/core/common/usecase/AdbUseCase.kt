@@ -69,13 +69,15 @@ class AdbUseCase(
     /**
      * 获取当前Activity
      */
-    fun currentFocusActivity(deviceId: String) {
+    fun currentFocusActivity(deviceId: String): String {
+        val result = StringBuilder()
         exec(
-            cmd = "$adbPath -s $deviceId shell dumpsys window | grep mCurrentFocus",
+            cmd = "$adbPath -s $deviceId shell dumpsys activity | grep mResumedActivity",
             onLine = {
-                logger("FocusActivity=$it")
+                result.append(it.trim())
             }
         )
+        return result.toString()
     }
 
     /**

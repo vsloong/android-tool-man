@@ -89,7 +89,7 @@ object SignTabScreen : BaseTabScreen() {
         )
 
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
 
 
             Column(

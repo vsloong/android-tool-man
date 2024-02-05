@@ -16,6 +16,10 @@ class UseCaseFactory(
         return getUseCase(cmd).run(cmd)
     }
 
+    fun getAdbUseCase(): AdbUseCase {
+        return getUseCase(cmd = CmdType.Adb.cmdName) as AdbUseCase
+    }
+
     private fun getUseCase(cmd: String): ICmdUseCase {
         val cmdName = cmd.split(whitespace).first()
 

@@ -5,7 +5,7 @@ plugins {
 dependencies {
 
     // 解压缩
-    implementation("org.apache.commons:commons-compress:1.21")
+//    implementation("org.apache.commons:commons-compress:1.26.0")
 
     // Json解析
     implementation("com.google.code.gson:gson:2.10.1")

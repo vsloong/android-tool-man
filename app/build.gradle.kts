@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.fir.declarations.builder.buildTypeAlias
 
 plugins {
     kotlin("jvm")
@@ -71,5 +72,12 @@ compose.desktop {
                 iconFile.set(iconsRoot.resolve("ic_launcher.icns"))
             }
         }
+
+        // 混淆配置
+        buildTypes.release.proguard {
+            configurationFiles.from("rules.pro")
+        }
     }
 }
+
+
